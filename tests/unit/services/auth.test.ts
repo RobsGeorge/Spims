@@ -76,6 +76,7 @@ const SA_USER = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockDb.$transaction.mockImplementation(async (fn: (tx: typeof mockDb) => Promise<unknown>) => fn(mockDb));
   // Default: no email degrades gracefully
   mockDb.otpToken.updateMany.mockResolvedValue({ count: 0 });
   mockDb.otpToken.create.mockResolvedValue({ id: "otp-1" });
@@ -96,7 +97,19 @@ describe("registerUser", () => {
         data: expect.objectContaining({ email: "a@b.com", status: "PENDING", emailVerified: false }),
       }),
     );
+    expect(mockDb.otpToken.create).toHaveBeenCalled();
     expect(sendOtpEmail).toHaveBeenCalledWith("a@b.com", expect.any(String));
+  });
+
+  it("does not leave a user without OTP when OTP creation fails", async () => {
+    mockDb.user.findUnique.mockResolvedValueOnce(null);
+    mockDb.user.create.mockResolvedValue({ id: "new-user", email: "a@b.com" });
+    mockDb.otpToken.create.mockRejectedValueOnce(new Error("OTP create failed"));
+
+    await expect(registerUser({ email: "a@b.com", firstName: "A", lastName: "B" })).rejects.toThrow(
+      "OTP create failed",
+    );
+    expect(sendOtpEmail).not.toHaveBeenCalled();
   });
 
   it("throws CONFLICT when email is already registered", async () => {
@@ -267,9 +280,30 @@ describe("confirmPasswordReset", () => {
 
     await confirmPasswordReset("a@b.com", "123456", "newPassword1");
 
+    expect(mockDb.otpToken.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { consumedAt: expect.any(Date) } }),
+    );
     expect(mockDb.user.update).toHaveBeenCalledWith(
       expect.objectContaining({ data: expect.objectContaining({ passwordHash: expect.stringContaining("hashed:") }) }),
     );
+  });
+
+  it("consumes OTP and updates password in the same audited transaction", async () => {
+    mockDb.user.findUnique.mockResolvedValue({ id: "user-1", email: "a@b.com" });
+    mockDb.otpToken.findMany.mockResolvedValue([{ id: "tok-1", codeHash: "hashed:123456" }]);
+    const callOrder: string[] = [];
+    mockDb.otpToken.update.mockImplementation(async () => {
+      callOrder.push("otp");
+      return {};
+    });
+    mockDb.user.update.mockImplementation(async () => {
+      callOrder.push("password");
+      return {};
+    });
+
+    await confirmPasswordReset("a@b.com", "123456", "newPassword1");
+
+    expect(callOrder).toEqual(["otp", "password"]);
   });
 
   it("throws VALIDATION when email not found", async () => {

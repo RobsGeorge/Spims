@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { hash, verify } from "argon2";
 import { randomInt, randomBytes } from "crypto";
+import type { PrismaClient } from "@prisma/client";
 import type { SessionUser } from "@/lib/auth/session";
 import { withAudit } from "@/lib/audit";
 import { AppError } from "@/lib/errors";
@@ -10,27 +11,33 @@ import type { OtpPurpose } from "@prisma/client";
 const OTP_EXPIRY_MS = 10 * 60 * 1000;
 const SESSION_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000;
 
-export async function issueOtp(userId: string, purpose: OtpPurpose): Promise<string> {
-  // Invalidate any previous active tokens for this purpose
-  await db.otpToken.updateMany({
+type TxClient = Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0];
+
+async function invalidateActiveOtps(tx: TxClient, userId: string, purpose: OtpPurpose) {
+  await tx.otpToken.updateMany({
     where: { userId, purpose, consumedAt: null },
     data: { consumedAt: new Date() },
   });
+}
+
+async function createOtpToken(tx: TxClient, userId: string, purpose: OtpPurpose): Promise<string> {
+  await invalidateActiveOtps(tx, userId, purpose);
 
   const code = String(randomInt(100000, 1000000)).padStart(6, "0");
   const codeHash = await hash(code);
   const expiresAt = new Date(Date.now() + OTP_EXPIRY_MS);
 
-  await db.otpToken.create({ data: { userId, purpose, codeHash, expiresAt } });
+  await tx.otpToken.create({ data: { userId, purpose, codeHash, expiresAt } });
   return code;
 }
 
-export async function verifyOtp(
+async function consumeOtpToken(
+  tx: TxClient,
   userId: string,
   code: string,
   purpose: OtpPurpose,
 ): Promise<void> {
-  const tokens = await db.otpToken.findMany({
+  const tokens = await tx.otpToken.findMany({
     where: { userId, purpose, consumedAt: null, expiresAt: { gt: new Date() } },
     orderBy: { createdAt: "desc" },
     take: 5,
@@ -38,10 +45,10 @@ export async function verifyOtp(
 
   for (const token of tokens) {
     if (await verify(token.codeHash, code)) {
-      await db.otpToken.update({ where: { id: token.id }, data: { consumedAt: new Date() } });
+      await tx.otpToken.update({ where: { id: token.id }, data: { consumedAt: new Date() } });
 
       if (purpose === "EMAIL_VERIFICATION") {
-        await db.user.update({
+        await tx.user.update({
           where: { id: userId },
           data: { emailVerified: true, status: "ACTIVE" },
         });
@@ -53,6 +60,18 @@ export async function verifyOtp(
   throw AppError.validation("Invalid or expired verification code");
 }
 
+export async function issueOtp(userId: string, purpose: OtpPurpose): Promise<string> {
+  return db.$transaction(async (tx) => createOtpToken(tx, userId, purpose));
+}
+
+export async function verifyOtp(
+  userId: string,
+  code: string,
+  purpose: OtpPurpose,
+): Promise<void> {
+  await db.$transaction(async (tx) => consumeOtpToken(tx, userId, code, purpose));
+}
+
 export async function registerUser(data: {
   email: string;
   firstName: string;
@@ -62,10 +81,10 @@ export async function registerUser(data: {
   const existing = await db.user.findUnique({ where: { email: data.email } });
   if (existing) throw AppError.conflict("Email already registered");
 
-  const user = await withAudit(
+  const { user, code } = await withAudit(
     { actor: null, action: "user.register", entityType: "User" },
-    async (tx) =>
-      tx.user.create({
+    async (tx) => {
+      const created = await tx.user.create({
         data: {
           email: data.email,
           firstName: data.firstName,
@@ -74,10 +93,12 @@ export async function registerUser(data: {
           status: "PENDING",
           emailVerified: false,
         },
-      }),
+      });
+      const otpCode = await createOtpToken(tx, created.id, "EMAIL_VERIFICATION");
+      return { user: created, code: otpCode };
+    },
   );
 
-  const code = await issueOtp(user.id, "EMAIL_VERIFICATION");
   await sendOtpEmail(data.email, code);
 
   return { id: user.id, email: user.email };
@@ -179,12 +200,11 @@ export async function confirmPasswordReset(
   const user = await db.user.findUnique({ where: { email } });
   if (!user) throw AppError.validation("Invalid or expired code");
 
-  await verifyOtp(user.id, code, "PASSWORD_RESET");
-
   const passwordHash = await hash(newPassword);
   await withAudit(
     { actor: null, action: "user.passwordReset", entityType: "User", entityId: user.id, ...ctx },
     async (tx) => {
+      await consumeOtpToken(tx, user.id, code, "PASSWORD_RESET");
       await tx.user.update({ where: { id: user.id }, data: { passwordHash } });
       return { id: user.id };
     },
