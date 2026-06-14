@@ -15,7 +15,9 @@ const PUBLIC_API_PATHS = [
 ];
 
 function isPublicApi(pathname: string): boolean {
-  return PUBLIC_API_PATHS.some((p) => pathname.startsWith(p));
+  if (PUBLIC_API_PATHS.some((p) => pathname.startsWith(p))) return true;
+  if (/^\/api\/offerings\/[^/]+\/preview$/.test(pathname)) return true;
+  return false;
 }
 
 function isApiRoute(pathname: string): boolean {

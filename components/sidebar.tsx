@@ -16,6 +16,8 @@ import {
   ClipboardList,
   FileText,
   Languages,
+  Calendar,
+  Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SessionUser } from "@/lib/auth/session";
@@ -47,6 +49,12 @@ const ADMIN_ITEMS: NavItem[] = [
     labelKey: "nav.branding",
     href: "/admin/branding",
     icon: Palette,
+    roles: [RoleType.SUPER_ADMIN, RoleType.ADMINISTRATIVE_ADMIN],
+  },
+  {
+    labelKey: "nav.semesters",
+    href: "/admin/semesters",
+    icon: Calendar,
     roles: [RoleType.SUPER_ADMIN, RoleType.ADMINISTRATIVE_ADMIN],
   },
 ];
@@ -81,6 +89,17 @@ const ACADEMIC_ITEMS: NavItem[] = [
     href: "/admin/translations",
     icon: Languages,
     roles: [RoleType.ACADEMIC_ADMIN],
+  },
+  {
+    labelKey: "nav.offerings",
+    href: "/admin/offerings",
+    icon: Layers,
+    roles: [
+      RoleType.ACADEMIC_ADMIN,
+      RoleType.FINANCIAL_ADMIN,
+      RoleType.INSTRUCTOR,
+      RoleType.TA,
+    ],
   },
 ];
 
