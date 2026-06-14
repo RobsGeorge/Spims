@@ -49,6 +49,8 @@ export function ContentEditor({
     body: "",
   });
 
+  const canAddItem = weeks.length > 0 && itemForm.weekId !== "";
+
   async function addWeek() {
     setError(null);
     const res = await fetch(`/api/offerings/${offeringId}/weeks`, {
@@ -72,6 +74,10 @@ export function ContentEditor({
   }
 
   async function addItem() {
+    if (!canAddItem) {
+      setError(t("content.addWeekFirst"));
+      return;
+    }
     setError(null);
     const payload: Record<string, string> = {
       type: itemForm.type,
@@ -151,13 +157,18 @@ export function ContentEditor({
           <div>
             <Label>{t("content.week")}</Label>
             <select
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-50"
               value={itemForm.weekId}
+              disabled={weeks.length === 0}
               onChange={(e) => setItemForm({ ...itemForm, weekId: e.target.value })}
             >
-              {weeks.map((w) => (
-                <option key={w.id} value={w.id}>Week {w.number}: {w.title}</option>
-              ))}
+              {weeks.length === 0 ? (
+                <option value="">{t("content.addWeekFirst")}</option>
+              ) : (
+                weeks.map((w) => (
+                  <option key={w.id} value={w.id}>Week {w.number}: {w.title}</option>
+                ))
+              )}
             </select>
           </div>
           <div>
@@ -209,7 +220,7 @@ export function ContentEditor({
               />
             </div>
           )}
-          <Button onClick={addItem}>{t("common.save")}</Button>
+          <Button onClick={addItem} disabled={!canAddItem}>{t("common.save")}</Button>
         </CardContent>
       </Card>
 

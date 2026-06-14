@@ -289,6 +289,7 @@
     "getUploadUrl": "Obtenir l'URL de téléversement",
     "storageUnavailable": "Stockage objet non configuré",
     "noItems": "Aucun élément cette semaine",
+    "addWeekFirst": "Ajoutez une semaine avant d'ajouter du contenu",
     "saveFailed": "Impossible d'enregistrer le contenu"
   },
   "preview": {
