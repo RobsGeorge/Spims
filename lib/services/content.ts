@@ -52,8 +52,9 @@ export async function listWeeks(offeringId: string) {
 export async function listWeeksWithAccess(
   offeringId: string,
   studentId: string,
-  completedWeekNumbers: number[] = [],
 ) {
+  const { getCompletedWeekNumbers } = await import("@/lib/services/weekProgress");
+  const completedWeekNumbers = await getCompletedWeekNumbers(studentId, offeringId);
   const offering = await db.courseOffering.findUnique({
     where: { id: offeringId },
     include: { weeks: { orderBy: { order: "asc" } } },

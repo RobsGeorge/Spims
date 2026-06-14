@@ -1,4 +1,4 @@
-import { OfferingMode, RoleType } from "@prisma/client";
+import { OfferingMode, OfferingStatus, RoleType } from "@prisma/client";
 import { db } from "@/lib/db";
 import type { SessionUser } from "@/lib/auth/session";
 import { withAudit } from "@/lib/audit";
@@ -52,6 +52,28 @@ export async function listOfferings(
         staff: { include: { user: { select: { id: true, firstName: true, lastName: true } } } },
         _count: { select: { weeks: true } },
       },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    db.courseOffering.count({ where }),
+  ]);
+
+  return { items, total, page, limit };
+}
+
+/** Student-facing catalog — all non-deleted enrollable offerings. */
+export async function listCatalogOfferings(opts: { page?: number; limit?: number } = {}) {
+  const { page = 1, limit = 20 } = opts;
+  const where = {
+    deletedAt: null as null,
+    status: { in: [OfferingStatus.OPEN, OfferingStatus.IN_PROGRESS] },
+  };
+
+  const [items, total] = await Promise.all([
+    db.courseOffering.findMany({
+      where,
+      include: { course: true, semester: true },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,

@@ -34,7 +34,10 @@
     "translations": "Translations",
     "academic": "Academic",
     "semesters": "Semesters",
-    "offerings": "Offerings"
+    "offerings": "Offerings",
+    "admissions": "Admissions",
+    "catalog": "Course catalog",
+    "degreeAudit": "Degree audit"
   },
   "auth": {
     "login": "Log in",
@@ -79,6 +82,8 @@
     "roles": "Roles",
     "assignRoles": "Assign roles",
     "reviewer": "Reviewer",
+    "reviewerOn": "Reviewer",
+    "reviewerOff": "Not reviewer",
     "table": {
       "name": "Name",
       "email": "Email",
@@ -299,5 +304,40 @@
     "week": "Week",
     "locked": "enrollment required",
     "noContent": "No preview content yet"
+  },
+  "admissions": {
+    "title": "Admissions",
+    "queue": "Application queue",
+    "formBuilder": "Application form",
+    "formName": "Form name",
+    "fieldLabel": "Field label",
+    "adminNote": "Admin note (shown to applicant)",
+    "required": "Required",
+    "addField": "Add field",
+    "saveFailed": "Could not save application form",
+    "noApplications": "No applications yet",
+    "accept": "Accept",
+    "reject": "Reject",
+    "waitlist": "Waitlist",
+    "decideFailed": "Could not record decision",
+    "apply": "Apply to program",
+    "applySubtitle": "Complete the form below. Your profile details are prefilled.",
+    "submit": "Submit application",
+    "submitFailed": "Could not submit application",
+    "noForm": "No application form is available for this program yet."
+  },
+  "enrollment": {
+    "catalog": "Enrollment catalog",
+    "enroll": "Enroll",
+    "success": "Enrolled successfully",
+    "waitlisted": "Added to waitlist",
+    "failed": "Enrollment failed",
+    "paid": "Paid course"
+  },
+  "degreeAudit": {
+    "title": "Degree audit",
+    "noProgram": "You are not enrolled in a program yet.",
+    "met": "Requirements met",
+    "remaining": "Requirements remaining"
   }
 }

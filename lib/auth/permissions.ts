@@ -91,6 +91,8 @@ const PERMISSION_MAP: Record<Action, RoleType[] | "any"> = {
   // ── Enrollment ────────────────────────────────────────────────────────────
   "enrollment.self": [RoleType.STUDENT],
   "enrollment.override": [RoleType.ADMINISTRATIVE_ADMIN],
+  "enrollment.waitlist": [RoleType.ADMINISTRATIVE_ADMIN],
+  "degreeAudit.view": [RoleType.STUDENT, RoleType.ACADEMIC_ADMIN],
 
   // ── Finance ───────────────────────────────────────────────────────────────
   "invoice.manage": [RoleType.FINANCIAL_ADMIN],

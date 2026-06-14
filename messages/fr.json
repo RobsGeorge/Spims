@@ -34,7 +34,10 @@
     "translations": "Traductions",
     "academic": "Académique",
     "semesters": "Semestres",
-    "offerings": "Offres de cours"
+    "offerings": "Offres de cours",
+    "admissions": "Admissions",
+    "catalog": "Catalogue d'inscription",
+    "degreeAudit": "Audit de diplôme"
   },
   "auth": {
     "login": "Se connecter",
@@ -79,6 +82,8 @@
     "roles": "Rôles",
     "assignRoles": "Assigner des rôles",
     "reviewer": "Évaluateur",
+    "reviewerOn": "Évaluateur",
+    "reviewerOff": "Non évaluateur",
     "table": {
       "name": "Nom",
       "email": "Email",
@@ -299,5 +304,40 @@
     "week": "Semaine",
     "locked": "inscription requise",
     "noContent": "Pas encore de contenu d'aperçu"
+  },
+  "admissions": {
+    "title": "Admissions",
+    "queue": "File des candidatures",
+    "formBuilder": "Formulaire de candidature",
+    "formName": "Nom du formulaire",
+    "fieldLabel": "Libellé du champ",
+    "adminNote": "Note admin (visible par le candidat)",
+    "required": "Obligatoire",
+    "addField": "Ajouter un champ",
+    "saveFailed": "Impossible d'enregistrer le formulaire",
+    "noApplications": "Aucune candidature",
+    "accept": "Accepter",
+    "reject": "Refuser",
+    "waitlist": "Liste d'attente",
+    "decideFailed": "Impossible d'enregistrer la décision",
+    "apply": "Postuler au programme",
+    "applySubtitle": "Complétez le formulaire ci-dessous. Votre profil est prérempli.",
+    "submit": "Soumettre la candidature",
+    "submitFailed": "Impossible de soumettre la candidature",
+    "noForm": "Aucun formulaire de candidature pour ce programme."
+  },
+  "enrollment": {
+    "catalog": "Catalogue d'inscription",
+    "enroll": "S'inscrire",
+    "success": "Inscription réussie",
+    "waitlisted": "Ajouté à la liste d'attente",
+    "failed": "Échec de l'inscription",
+    "paid": "Cours payant"
+  },
+  "degreeAudit": {
+    "title": "Audit de diplôme",
+    "noProgram": "Vous n'êtes inscrit à aucun programme.",
+    "met": "Exigences satisfaites",
+    "remaining": "Exigences restantes"
   }
 }

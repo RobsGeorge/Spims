@@ -16,6 +16,9 @@ vi.mock("@/lib/audit", () => ({
     mutation(mockDb),
   ),
 }));
+vi.mock("@/lib/services/weekProgress", () => ({
+  getCompletedWeekNumbers: vi.fn(async () => []),
+}));
 
 import { createWeek, createContentItem, listWeeksWithAccess } from "@/lib/services/content";
 import { AppError } from "@/lib/errors";
@@ -113,7 +116,7 @@ describe("content service", () => {
       },
     ]);
 
-    const weeks = await listWeeksWithAccess("off-1", "stu-1", []);
+    const weeks = await listWeeksWithAccess("off-1", "stu-1");
     expect(weeks[0]?.unlocked).toBe(true);
     expect(weeks[0]?.items).toHaveLength(1);
     expect(weeks[1]?.unlocked).toBe(false);

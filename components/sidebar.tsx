@@ -18,6 +18,9 @@ import {
   Languages,
   Calendar,
   Layers,
+  UserCheck,
+  ShoppingCart,
+  ClipboardCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SessionUser } from "@/lib/auth/session";
@@ -33,6 +36,8 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { labelKey: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard },
   { labelKey: "nav.courses", href: "/courses", icon: BookOpen },
+  { labelKey: "nav.catalog", href: "/catalog", icon: ShoppingCart, roles: [RoleType.STUDENT] },
+  { labelKey: "nav.degreeAudit", href: "/degree-audit", icon: ClipboardCheck, roles: [RoleType.STUDENT] },
   { labelKey: "nav.grades", href: "/grades", icon: Award },
   { labelKey: "nav.wallet", href: "/wallet", icon: Wallet },
   { labelKey: "nav.settings", href: "/settings", icon: Settings },
@@ -43,6 +48,12 @@ const ADMIN_ITEMS: NavItem[] = [
     labelKey: "nav.users",
     href: "/admin/users",
     icon: Users,
+    roles: [RoleType.SUPER_ADMIN, RoleType.ADMINISTRATIVE_ADMIN],
+  },
+  {
+    labelKey: "nav.admissions",
+    href: "/admin/admissions",
+    icon: UserCheck,
     roles: [RoleType.SUPER_ADMIN, RoleType.ADMINISTRATIVE_ADMIN],
   },
   {
@@ -150,7 +161,9 @@ export function Sidebar({ user, locale }: { user: SessionUser; locale: string })
       </div>
 
       <nav className="flex-1 overflow-y-auto p-2 space-y-1">
-        {NAV_ITEMS.map((item) => (
+        {NAV_ITEMS.filter(
+          (item) => !item.roles || item.roles.some((r) => user.roles.includes(r)),
+        ).map((item) => (
           <NavLink key={item.href} item={item} locale={locale} pathname={pathname} t={t} />
         ))}
 

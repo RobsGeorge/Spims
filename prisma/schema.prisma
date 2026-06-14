@@ -296,6 +296,7 @@ model User {
   donations        Donation[]
   invoices         Invoice[]
   payments         Payment[]
+  weekProgress     WeekProgress[]
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   deletedAt        DateTime?
@@ -536,7 +537,19 @@ model Week {
   order      Int
   offering   CourseOffering @relation(fields: [offeringId], references: [id], onDelete: Cascade)
   items      ContentItem[]
+  progress   WeekProgress[]
   @@unique([offeringId, number])
+}
+
+model WeekProgress {
+  id          String   @id @default(cuid())
+  studentId   String
+  weekId      String
+  completedAt DateTime @default(now())
+  student     User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  week        Week     @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  @@unique([studentId, weekId])
+  @@index([studentId])
 }
 
 model ContentItem {
@@ -889,6 +902,7 @@ model Application {
   values       ApplicationFieldValue[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  @@unique([applicantId, programId])
   @@index([status])
 }
 

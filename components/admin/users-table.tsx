@@ -12,6 +12,7 @@ interface User {
   firstName: string;
   lastName: string;
   status: UserStatus;
+  isReviewer: boolean;
   roles: { role: RoleType }[];
 }
 
@@ -35,6 +36,15 @@ export function UsersTable({ users, actorRoles }: { users: User[]; actorRoles: R
     router.refresh();
   }
 
+  async function toggleReviewer(id: string, current: boolean) {
+    await fetch(`/api/users/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isReviewer: !current }),
+    });
+    router.refresh();
+  }
+
   void actorRoles;
 
   return (
@@ -46,6 +56,7 @@ export function UsersTable({ users, actorRoles }: { users: User[]; actorRoles: R
             <th className="text-start px-4 py-3 font-medium">{t("users.table.email")}</th>
             <th className="text-start px-4 py-3 font-medium">{t("users.table.roles")}</th>
             <th className="text-start px-4 py-3 font-medium">{t("users.table.status")}</th>
+            <th className="text-start px-4 py-3 font-medium">{t("users.reviewer")}</th>
             <th className="text-end px-4 py-3 font-medium">{t("users.table.actions")}</th>
           </tr>
         </thead>
@@ -69,6 +80,15 @@ export function UsersTable({ users, actorRoles }: { users: User[]; actorRoles: R
                 <Badge variant={STATUS_VARIANT[user.status]}>
                   {t(`common.${user.status.toLowerCase()}` as Parameters<typeof t>[0])}
                 </Badge>
+              </td>
+              <td className="px-4 py-3">
+                <Button
+                  variant={user.isReviewer ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => toggleReviewer(user.id, user.isReviewer)}
+                >
+                  {user.isReviewer ? t("users.reviewerOn") : t("users.reviewerOff")}
+                </Button>
               </td>
               <td className="px-4 py-3 text-end">
                 <Button

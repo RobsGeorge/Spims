@@ -45,3 +45,25 @@ export async function sendPasswordResetEmail(to: string, code: string): Promise<
     html: `<p>Your password reset code is: <strong>${code}</strong></p><p>Expires in 10 minutes.</p>`,
   });
 }
+
+export async function sendApplicationDecisionEmail(
+  to: string,
+  programName: string,
+  decision: string,
+  note?: string,
+): Promise<void> {
+  const t = getTransporter();
+  const subject = `Application decision: ${decision}`;
+  const body = `Your application to ${programName} was ${decision}.${note ? `\n\nNote: ${note}` : ""}`;
+  if (!t) {
+    console.warn(`[email] No EMAIL_HOST — decision for ${to}: ${decision}`);
+    return;
+  }
+  await t.sendMail({
+    from: FROM(),
+    to,
+    subject,
+    text: body,
+    html: `<p>${body.replace(/\n/g, "<br>")}</p>`,
+  });
+}
