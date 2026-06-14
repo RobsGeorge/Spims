@@ -16,5 +16,9 @@ export default async function AppLayout({
     redirect(`/${locale}/login`);
   }
 
-  return <AppShell user={user}>{children}</AppShell>;
+  return (
+    <AppShell user={user} locale={locale}>
+      {children}
+    </AppShell>
+  );
 }
