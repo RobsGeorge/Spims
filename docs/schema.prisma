@@ -1,0 +1,1028 @@
+// =============================================================================
+// Spims SIS + LMS — Prisma Schema (v1 draft, traces to spec v0.2)
+// =============================================================================
+// CONVENTIONS
+// - IDs: cuid(). Timestamps: createdAt/updatedAt on most models.
+// - MONEY: stored as integer MINOR UNITS (piastres / cents) + Currency enum.
+//          NEVER floats. Regional pricing = independent USD & EGP amounts.
+// - SOFT DELETE: sensitive models carry `deletedAt DateTime?`.
+// - AUDIT: the central `AuditLog` is the source of truth for "who did what when".
+//          Incidental actor fields are stored as `*ById String?` WITHOUT an
+//          explicit relation (to avoid back-relation sprawl); they reference
+//          User.id. Core domain relations ARE explicit.
+// - i18n: translatable text lives in the `Translation` table keyed by
+//          (entityType, entityId, field, locale). Languages are data, not enums,
+//          so new languages can be added without a migration.
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================== ENUMS ========================================
+
+enum RoleType {
+  SUPER_ADMIN
+  ADMINISTRATIVE_ADMIN
+  ACADEMIC_ADMIN
+  FINANCIAL_ADMIN
+  INSTRUCTOR
+  TA
+  STUDENT
+}
+
+enum UserStatus { ACTIVE  SUSPENDED  PENDING }
+enum OtpPurpose { EMAIL_VERIFICATION  PASSWORD_RESET }
+enum ThemePreference { LIGHT  DARK  SYSTEM }
+enum TranslationSource { AI  HUMAN }
+
+enum ProgramType { DIPLOMA  CERTIFICATE  DEGREE }
+enum RequirementType { REQUIRED  ELECTIVE }
+
+enum OfferingMode { COHORT  SELF_PACED }
+enum OfferingStaffRole { INSTRUCTOR  TA }
+enum OfferingStatus { DRAFT  OPEN  IN_PROGRESS  COMPLETED  ARCHIVED }
+
+enum ContentItemType { VIDEO  READING  TEXT  ASSIGNMENT  QUIZ  EXAM  DISCUSSION }
+enum SubmissionType { FILE  TEXT  BOTH }
+
+enum QuestionType {
+  MCQ_SINGLE  MCQ_MULTI  TRUE_FALSE  SHORT_ANSWER  ESSAY
+  MATCHING  FILL_BLANK  NUMERIC  ORDERING  FILE_UPLOAD
+}
+
+enum AssessmentMode { QUIZ  EXAM }
+enum ScoringRule { HIGHEST  LATEST  AVERAGE }
+enum ResultsVisibility { IMMEDIATE  AFTER_CLOSE  ON_RELEASE }
+enum AttemptStatus { IN_PROGRESS  SUBMITTED  AUTO_SUBMITTED  GRADED }
+
+enum ComponentKind { ASSIGNMENT  QUIZ  EXAM  ATTENDANCE  DISCUSSION  OTHER }
+enum GradeType { STANDARD  WITHDRAWAL  PASS_FAIL  AUDIT  IN_PROGRESS }
+
+enum EnrollmentStatus { ENROLLED  WAITLISTED  DROPPED  WITHDRAWN  COMPLETED }
+enum GradeStatus { IN_PROGRESS  SUBMITTED  LOCKED }
+enum StudentProgramStatus { ACTIVE  COMPLETED  WITHDRAWN }
+
+enum AttendanceStatus { PRESENT  ABSENT }
+enum AttendanceSource { ZOOM_IMPORT  MANUAL }
+
+enum ApplicationStatus { DRAFT  SUBMITTED  UNDER_REVIEW  ACCEPTED  REJECTED  WAITLISTED }
+enum FormFieldType { TEXT  TEXTAREA  NUMBER  DATE  SELECT  MULTISELECT  FILE  CHECKBOX }
+
+enum Currency { EGP  USD }
+enum WalletKind { MONEY  POINTS }
+enum LedgerDirection { CREDIT  DEBIT }
+enum LedgerReason { TOPUP  REFUND  PAYMENT  DONATION  ADMIN_GRANT  ADJUSTMENT }
+
+enum PaymentMethod {
+  PAYPAL  PAYMOB  CASHIER  WALLET_MONEY  WALLET_POINTS
+  MANUAL_CASH  MANUAL_TRANSFER  MANUAL_CHEQUE
+}
+enum PaymentStatus { PENDING  PENDING_VERIFICATION  COMPLETED  FAILED  REFUNDED }
+enum InvoiceStatus { OPEN  PARTIAL  PAID  VOID  REFUNDED }
+enum RefundStatus { REQUESTED  APPROVED  REJECTED  COMPLETED }
+
+enum CredentialType { TRANSCRIPT  PROGRAM_CERTIFICATE  STANDALONE_CERTIFICATE }
+enum NotificationChannel { IN_APP  EMAIL }
+enum ThreadVisibility { OPEN  PRIVATE_TO_INSTRUCTOR }
+
+// ====================== IDENTITY & ACCESS ====================================
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  phone         String?
+  firstName     String
+  lastName      String
+  passwordHash  String?
+  emailVerified Boolean    @default(false)
+  preferredLocale String   @default("en")
+  themePreference ThemePreference @default(SYSTEM)
+  countryCode   String?    // drives regional pricing (EG => EGP, else USD)
+  status        UserStatus @default(PENDING)
+  isReviewer    Boolean    @default(false) // eligible for round-robin admissions review
+  lastReviewedAt DateTime? // round-robin fairness pointer
+
+  roles         UserRole[]
+  sessions      Session[]
+  otpTokens     OtpToken[]
+  wallet        WalletAccount?
+
+  applications  Application[]
+  enrollments   Enrollment[]
+  studentPrograms StudentProgram[]
+  academicRecords AcademicRecord[]
+  offeringStaff OfferingStaff[]
+  submissions   AssignmentSubmission[]
+  attempts      AssessmentAttempt[]
+  attendance    AttendanceRecord[]
+  discussionPosts DiscussionPost[]
+  discussionGrades DiscussionGrade[]
+  interestFlags CourseInterestFlag[]
+  notifications Notification[]
+  credentials   Credential[]
+  donations     Donation[]
+  invoices      Invoice[]
+  payments      Payment[]
+
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
+
+  @@index([status])
+}
+
+model UserRole {
+  id     String   @id @default(cuid())
+  userId String
+  role   RoleType
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, role])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  ip        String?
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model OtpToken {
+  id        String     @id @default(cuid())
+  userId    String
+  purpose   OtpPurpose
+  codeHash  String
+  expiresAt DateTime
+  consumedAt DateTime?
+  createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ====================== LOCALIZATION =========================================
+
+model Language {
+  code    String  @id // "ar", "en", "fr", ...
+  name    String
+  isRtl   Boolean @default(false)
+  enabled Boolean @default(true)
+}
+
+model Translation {
+  id         String            @id @default(cuid())
+  entityType String            // "Course", "Week", "Announcement", ...
+  entityId   String
+  field      String            // "title", "body", ...
+  locale     String
+  value      String
+  source     TranslationSource @default(HUMAN)
+  verified   Boolean           @default(false)
+  updatedById String?
+  updatedAt  DateTime          @updatedAt
+
+  @@unique([entityType, entityId, field, locale])
+  @@index([entityType, entityId])
+}
+
+// ====================== ACADEMICS ============================================
+
+model GradingScheme {
+  id        String      @id @default(cuid())
+  name      String
+  isDefault Boolean     @default(false)
+  bands     GradeBand[]
+  programs  Program[]
+  createdAt DateTime    @default(now())
+}
+
+model GradeBand {
+  id         String        @id @default(cuid())
+  schemeId   String
+  letter     String        // "A", "A-", "B+", ...
+  minPercent Float
+  maxPercent Float
+  gpaPoints  Float
+  isPassing  Boolean
+  scheme     GradingScheme @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+}
+
+model AssessmentTemplate {
+  id         String                        @id @default(cuid())
+  name       String
+  isDefault  Boolean                       @default(false)
+  components AssessmentTemplateComponent[]
+  courses    Course[]
+  createdAt  DateTime                      @default(now())
+}
+
+model AssessmentTemplateComponent {
+  id            String             @id @default(cuid())
+  templateId    String
+  name          String
+  weightPercent Float
+  kind          ComponentKind
+  template      AssessmentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+}
+
+model Program {
+  id                     String      @id @default(cuid())
+  code                   String      @unique
+  name                   String      // translatable via Translation
+  type                   ProgramType
+  passingThreshold       Float       @default(60)
+  maxCreditsPerSemester  Int
+  maxCoursesPerSemester  Int
+  maxSemestersToGraduate Int
+  electiveCreditsRequired Int        @default(0)
+  signatoryName          String?
+  signatoryTitle         String?
+  gradingSchemeId        String?
+  active                 Boolean     @default(true)
+
+  gradingScheme   GradingScheme? @relation(fields: [gradingSchemeId], references: [id])
+  programCourses  ProgramCourse[]
+  applicationForms ApplicationForm[]
+  applications    Application[]
+  studentPrograms StudentProgram[]
+  credentials     Credential[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Course {
+  id               String          @id @default(cuid())
+  code             String          @unique
+  title            String          // translatable
+  creditHours      Int
+  defaultPriceUsd  Int             @default(0) // minor units
+  defaultPriceEgp  Int             @default(0)
+  isFree           Boolean         @default(false)
+  isStandalone     Boolean         @default(false)
+  passingThreshold Float?          // overrides program default if set
+  assessmentTemplateId String?
+  active           Boolean         @default(true)
+
+  assessmentTemplate AssessmentTemplate? @relation(fields: [assessmentTemplateId], references: [id])
+  programCourses   ProgramCourse[]
+  prerequisitesFor CoursePrerequisite[] @relation("RequiresCourse")
+  prerequisites    CoursePrerequisite[] @relation("PrerequisiteCourse")
+  offerings        CourseOffering[]
+  questionBanks    QuestionBank[]
+  academicRecords  AcademicRecord[]
+  interestFlags    CourseInterestFlag[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model CoursePrerequisite {
+  id               String @id @default(cuid())
+  courseId         String
+  prerequisiteId   String
+  course           Course @relation("RequiresCourse", fields: [courseId], references: [id], onDelete: Cascade)
+  prerequisite     Course @relation("PrerequisiteCourse", fields: [prerequisiteId], references: [id])
+
+  @@unique([courseId, prerequisiteId])
+}
+
+model ProgramCourse {
+  id          String          @id @default(cuid())
+  programId   String
+  courseId    String
+  requirement RequirementType
+  yearLevel   Int?
+  program     Program         @relation(fields: [programId], references: [id], onDelete: Cascade)
+  course      Course          @relation(fields: [courseId], references: [id])
+  fulfillments ProgramRequirementFulfillment[]
+
+  @@unique([programId, courseId])
+}
+
+// ====================== SEMESTERS ============================================
+
+model AcademicYear {
+  id        String     @id @default(cuid())
+  name      String     // "2026/2027"
+  startDate DateTime
+  endDate   DateTime
+  semesters Semester[]
+}
+
+model Semester {
+  id                   String         @id @default(cuid())
+  academicYearId       String
+  name                 String         // "Fall", "Spring", ...
+  startDate            DateTime
+  endDate              DateTime
+  registrationStart    DateTime
+  registrationEnd      DateTime
+  addDropEndWeek       Int            // clean drop, full refund, until this week #
+  lastWithdrawalWeek   Int            // partial refund until here, none after
+  withdrawalRefundPercent Float       @default(0)
+  status               OfferingStatus @default(DRAFT)
+  academicYear         AcademicYear   @relation(fields: [academicYearId], references: [id])
+  offerings            CourseOffering[]
+}
+
+// ====================== OFFERINGS & CONTENT ==================================
+
+model CourseOffering {
+  id                       String         @id @default(cuid())
+  courseId                 String
+  semesterId               String?        // null => self-paced
+  mode                     OfferingMode   @default(COHORT)
+  priceUsdOverride         Int?
+  priceEgpOverride         Int?
+  seatCapacity             Int?
+  attendanceThresholdPercent Float        @default(60)
+  status                   OfferingStatus @default(DRAFT)
+  startDate                DateTime?
+  endDate                  DateTime?
+
+  course        Course   @relation(fields: [courseId], references: [id])
+  semester      Semester? @relation(fields: [semesterId], references: [id])
+  staff         OfferingStaff[]
+  weeks         Week[]
+  liveSessions  LiveSession[]
+  recurrences   SessionRecurrence[]
+  assessments   Assessment[]
+  gradebookComponents GradebookComponent[]
+  enrollments   Enrollment[]
+  announcements Announcement[]
+  discussionBoard DiscussionBoard?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([courseId])
+  @@index([semesterId])
+}
+
+model OfferingStaff {
+  id         String            @id @default(cuid())
+  offeringId String
+  userId     String
+  role       OfferingStaffRole
+  offering   CourseOffering    @relation(fields: [offeringId], references: [id], onDelete: Cascade)
+  user       User              @relation(fields: [userId], references: [id])
+
+  @@unique([offeringId, userId, role])
+}
+
+model Week {
+  id         String         @id @default(cuid())
+  offeringId String
+  number     Int
+  title      String         // translatable
+  unlockDate DateTime?      // cohort date-gate; null + self-paced => unlock on prior completion
+  order      Int
+  offering   CourseOffering @relation(fields: [offeringId], references: [id], onDelete: Cascade)
+  items      ContentItem[]
+
+  @@unique([offeringId, number])
+}
+
+model ContentItem {
+  id         String          @id @default(cuid())
+  weekId     String
+  type       ContentItemType
+  title      String          // translatable
+  order      Int
+  vimeoId    String?
+  fileUrl    String?
+  body       String?         // translatable text lesson
+  week       Week            @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  assignment Assignment?
+  assessment Assessment?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Assignment {
+  id              String         @id @default(cuid())
+  contentItemId   String         @unique
+  componentId     String?
+  instructions    String
+  submissionType  SubmissionType @default(BOTH)
+  allowedFileTypes String[]
+  maxPoints       Float          @default(100)
+  dueDate         DateTime?
+  latePenaltyOverride Float?     // overrides system escalating default
+  contentItem     ContentItem    @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
+  component       GradebookComponent? @relation(fields: [componentId], references: [id])
+  submissions     AssignmentSubmission[]
+}
+
+model AssignmentSubmission {
+  id           String     @id @default(cuid())
+  assignmentId String
+  studentId    String
+  textBody     String?
+  fileUrl      String?
+  submittedAt  DateTime   @default(now())
+  isLate       Boolean    @default(false)
+  rawScore     Float?
+  finalScore   Float?     // after late penalty
+  feedback     String?
+  gradedById   String?
+  gradedAt     DateTime?
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  student      User       @relation(fields: [studentId], references: [id])
+
+  @@unique([assignmentId, studentId])
+}
+
+// ====================== LIVE SESSIONS & ATTENDANCE ===========================
+
+model SessionRecurrence {
+  id          String         @id @default(cuid())
+  offeringId  String
+  daysOfWeek  Int[]          // 0=Sun..6=Sat
+  startTime   String         // "19:00"
+  durationMinutes Int
+  startDate   DateTime
+  endDate     DateTime
+  offering    CourseOffering @relation(fields: [offeringId], references: [id], onDelete: Cascade)
+}
+
+model LiveSession {
+  id             String   @id @default(cuid())
+  offeringId     String
+  title          String
+  scheduledStart DateTime
+  durationMinutes Int
+  zoomMeetingId  String?
+  zoomJoinUrl    String?
+  zoomStartUrl   String?
+  recordingUrl   String?
+  offering       CourseOffering @relation(fields: [offeringId], references: [id], onDelete: Cascade)
+  attendance     AttendanceRecord[]
+
+  @@index([offeringId, scheduledStart])
+}
+
+model AttendanceRecord {
+  id              String           @id @default(cuid())
+  liveSessionId   String
+  studentId       String
+  status          AttendanceStatus
+  minutesAttended Int              @default(0)
+  source          AttendanceSource @default(ZOOM_IMPORT)
+  overriddenById  String?
+  updatedAt       DateTime         @updatedAt
+  liveSession     LiveSession      @relation(fields: [liveSessionId], references: [id], onDelete: Cascade)
+  student         User             @relation(fields: [studentId], references: [id])
+
+  @@unique([liveSessionId, studentId])
+}
+
+// ====================== ASSESSMENT ENGINE ====================================
+
+model QuestionBank {
+  id        String     @id @default(cuid())
+  courseId  String
+  name      String
+  course    Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  questions Question[]
+}
+
+model Question {
+  id            String       @id @default(cuid())
+  bankId        String
+  type          QuestionType
+  prompt        String       // translatable
+  points        Float        @default(1)
+  config        Json?        // type-specific (numeric tolerance, ordering, fill-blank, matching pairs)
+  // essay AI-assist:
+  aiKeyPoints   String?
+  aiGuidance    String?
+  bank          QuestionBank @relation(fields: [bankId], references: [id], onDelete: Cascade)
+  options       QuestionOption[]
+  assessmentQuestions AssessmentQuestion[]
+  answers       AttemptAnswer[]
+}
+
+model QuestionOption {
+  id         String   @id @default(cuid())
+  questionId String
+  text       String
+  isCorrect  Boolean  @default(false)
+  matchKey   String?  // for MATCHING
+  order      Int      @default(0)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Assessment {
+  id               String            @id @default(cuid())
+  offeringId       String
+  contentItemId    String?           @unique
+  componentId      String?
+  mode             AssessmentMode
+  title            String
+  language         String            @default("en")
+  timeLimitMinutes Int?
+  opensAt          DateTime?
+  closesAt         DateTime?
+  attemptsAllowed  Int               @default(1)
+  scoringRule      ScoringRule       @default(HIGHEST)
+  shuffleQuestions Boolean           @default(true)
+  shuffleOptions   Boolean           @default(true)
+  drawFromBankId   String?           // random-subset source
+  questionsToDraw  Int?
+  resultsVisibility ResultsVisibility @default(ON_RELEASE)
+  revealAnswers    Boolean           @default(false)
+  // soft integrity flags:
+  enforceFullScreen Boolean          @default(false)
+  oneAtATime       Boolean           @default(false)
+  noBacktrack      Boolean           @default(false)
+  logFocusLoss     Boolean           @default(true)
+
+  offering     CourseOffering @relation(fields: [offeringId], references: [id], onDelete: Cascade)
+  contentItem  ContentItem?   @relation(fields: [contentItemId], references: [id])
+  component    GradebookComponent? @relation(fields: [componentId], references: [id])
+  questions    AssessmentQuestion[]
+  attempts     AssessmentAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AssessmentQuestion {
+  id            String     @id @default(cuid())
+  assessmentId  String
+  questionId    String
+  order         Int        @default(0)
+  pointsOverride Float?
+  assessment    Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  question      Question   @relation(fields: [questionId], references: [id])
+
+  @@unique([assessmentId, questionId])
+}
+
+model AssessmentAttempt {
+  id           String        @id @default(cuid())
+  assessmentId String
+  studentId    String
+  attemptNo    Int           @default(1)
+  startedAt    DateTime      @default(now())
+  dueAt        DateTime      // server-authoritative timer
+  submittedAt  DateTime?
+  status       AttemptStatus @default(IN_PROGRESS)
+  totalScore   Float?
+  focusLossCount Int         @default(0)
+  assessment   Assessment    @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  student      User          @relation(fields: [studentId], references: [id])
+  answers      AttemptAnswer[]
+
+  @@unique([assessmentId, studentId, attemptNo])
+  @@index([status])
+}
+
+model AttemptAnswer {
+  id              String   @id @default(cuid())
+  attemptId       String
+  questionId      String
+  response        Json?    // autosaved progressively
+  autoScore       Float?   // objective auto-grade
+  aiSuggestedScore Float?  // essay AI suggestion
+  aiRationale     String?
+  finalScore      Float?
+  feedback        String?
+  gradedById      String?
+  gradedAt        DateTime?
+  attempt         AssessmentAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question        Question @relation(fields: [questionId], references: [id])
+
+  @@unique([attemptId, questionId])
+}
+
+// ====================== GRADEBOOK & RECORDS ==================================
+
+model GradebookComponent {
+  id            String        @id @default(cuid())
+  offeringId    String
+  name          String
+  weightPercent Float
+  kind          ComponentKind
+  offering      CourseOffering @relation(fields: [offeringId], references: [id], onDelete: Cascade)
+  assignments   Assignment[]
+  assessments   Assessment[]
+}
+
+model Enrollment {
+  id              String           @id @default(cuid())
+  studentId       String
+  offeringId      String
+  studentProgramId String?         // which program this counts toward (null => standalone)
+  status          EnrollmentStatus @default(ENROLLED)
+  isAudit         Boolean          @default(false)
+  enrolledAt      DateTime         @default(now())
+  droppedAt       DateTime?
+  // final grade snapshot:
+  gradeType       GradeType        @default(IN_PROGRESS)
+  finalPercent    Float?
+  finalLetter     String?
+  finalGpaPoints  Float?
+  gradeStatus     GradeStatus      @default(IN_PROGRESS)
+  gradeLockedById String?
+  gradeLockedAt   DateTime?
+  progressPercent Float            @default(0) // self-paced tracking
+
+  student         User             @relation(fields: [studentId], references: [id])
+  offering        CourseOffering   @relation(fields: [offeringId], references: [id])
+  studentProgram  StudentProgram?  @relation(fields: [studentProgramId], references: [id])
+  academicRecord  AcademicRecord?
+
+  @@unique([studentId, offeringId])
+  @@index([status])
+}
+
+model StudentProgram {
+  id          String               @id @default(cuid())
+  studentId   String
+  programId   String
+  status      StudentProgramStatus @default(ACTIVE)
+  enrolledAt  DateTime             @default(now())
+  completedAt DateTime?
+  cachedGpa   Float?
+  student     User                 @relation(fields: [studentId], references: [id])
+  program     Program              @relation(fields: [programId], references: [id])
+  enrollments Enrollment[]
+  fulfillments ProgramRequirementFulfillment[]
+
+  @@unique([studentId, programId])
+}
+
+// Program-agnostic record of a passed (or graded) course. Enables cross-program reuse.
+model AcademicRecord {
+  id           String   @id @default(cuid())
+  studentId    String
+  courseId     String
+  enrollmentId String?  @unique
+  letterGrade  String
+  percent      Float
+  gpaPoints    Float
+  creditHours  Int
+  term         String   // human-readable term label or "self-paced"
+  isPassing    Boolean
+  completedAt  DateTime @default(now())
+  student      User     @relation(fields: [studentId], references: [id])
+  course       Course   @relation(fields: [courseId], references: [id])
+  enrollment   Enrollment? @relation(fields: [enrollmentId], references: [id])
+  fulfillments ProgramRequirementFulfillment[]
+
+  @@index([studentId, courseId])
+}
+
+// Applies a record to a specific program requirement (reuse / standalone-counts-later).
+model ProgramRequirementFulfillment {
+  id               String         @id @default(cuid())
+  studentProgramId String
+  programCourseId  String
+  academicRecordId String
+  appliedAt        DateTime       @default(now())
+  studentProgram   StudentProgram @relation(fields: [studentProgramId], references: [id], onDelete: Cascade)
+  programCourse    ProgramCourse  @relation(fields: [programCourseId], references: [id])
+  academicRecord   AcademicRecord @relation(fields: [academicRecordId], references: [id])
+
+  @@unique([studentProgramId, programCourseId])
+}
+
+model CourseInterestFlag {
+  id        String   @id @default(cuid())
+  studentId String
+  courseId  String
+  createdAt DateTime @default(now())
+  student   User     @relation(fields: [studentId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+
+  @@unique([studentId, courseId])
+}
+
+model Credential {
+  id            String         @id @default(cuid())
+  studentId     String
+  type          CredentialType
+  programId     String?
+  offeringId    String?        // standalone course cert
+  serial        String         @unique
+  qrToken       String         @unique
+  language      String         @default("en")
+  signatoryName String?
+  signatoryTitle String?
+  fileUrl       String?
+  issuedAt      DateTime       @default(now())
+  revokedAt     DateTime?
+  student       User           @relation(fields: [studentId], references: [id])
+  program       Program?       @relation(fields: [programId], references: [id])
+}
+
+// ====================== ADMISSIONS ===========================================
+
+model ApplicationForm {
+  id          String              @id @default(cuid())
+  programId   String
+  name        String
+  active      Boolean             @default(true)
+  program     Program             @relation(fields: [programId], references: [id], onDelete: Cascade)
+  fields      ApplicationFormField[]
+  applications Application[]
+}
+
+model ApplicationFormField {
+  id         String        @id @default(cuid())
+  formId     String
+  label      String        // translatable
+  type       FormFieldType
+  required   Boolean       @default(false)
+  order      Int
+  options    String[]      // for SELECT/MULTISELECT
+  allowedFileTypes String[] // for FILE
+  adminNote  String?       // justification/help shown to applicant
+  form       ApplicationForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+  values     ApplicationFieldValue[]
+}
+
+model Application {
+  id          String            @id @default(cuid())
+  applicantId String
+  programId   String
+  formId      String
+  status      ApplicationStatus @default(DRAFT)
+  reviewerId  String?           // round-robin assigned
+  decisionNote String?
+  submittedAt DateTime?
+  decidedAt   DateTime?
+  applicant   User              @relation(fields: [applicantId], references: [id])
+  program     Program           @relation(fields: [programId], references: [id])
+  form        ApplicationForm   @relation(fields: [formId], references: [id])
+  values      ApplicationFieldValue[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+model ApplicationFieldValue {
+  id            String      @id @default(cuid())
+  applicationId String
+  fieldId       String
+  value         String?     // text answer
+  fileUrl       String?     // uploaded document
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  field         ApplicationFormField @relation(fields: [fieldId], references: [id])
+
+  @@unique([applicationId, fieldId])
+}
+
+// ====================== FINANCE & WALLET =====================================
+
+model Invoice {
+  id         String        @id @default(cuid())
+  studentId  String
+  currency   Currency
+  totalMinor Int
+  status     InvoiceStatus @default(OPEN)
+  dueDate    DateTime?
+  student    User          @relation(fields: [studentId], references: [id])
+  lines      InvoiceLine[]
+  payments   Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InvoiceLine {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  description String
+  offeringId  String?
+  amountMinor Int
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  studentId     String
+  invoiceId     String?
+  currency      Currency
+  amountMinor   Int
+  method        PaymentMethod
+  status        PaymentStatus @default(PENDING)
+  gatewayRef    String?
+  proofUrl      String?       // manual payment proof
+  recordedById  String?       // manual entry actor
+  verifiedById  String?       // manual verification actor
+  receiptSerial String?       @unique
+  receiptUrl    String?
+  student       User          @relation(fields: [studentId], references: [id])
+  invoice       Invoice?      @relation(fields: [invoiceId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([status])
+}
+
+model WalletAccount {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions WalletTransaction[]
+  // derived balances (cached); source of truth = ledger:
+  egpMoneyMinor  Int    @default(0)
+  usdMoneyMinor  Int    @default(0)
+  egpPointsMinor Int    @default(0)
+  usdPointsMinor Int    @default(0)
+}
+
+model WalletTransaction {
+  id           String          @id @default(cuid())
+  walletId     String
+  currency     Currency
+  kind         WalletKind
+  direction    LedgerDirection
+  amountMinor  Int
+  reason       LedgerReason
+  relatedPaymentId String?
+  relatedInvoiceId String?
+  note         String?
+  createdById  String?
+  createdAt    DateTime        @default(now())
+  wallet       WalletAccount   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId, currency, kind])
+}
+
+model Donation {
+  id          String     @id @default(cuid())
+  userId      String?
+  amountMinor Int
+  currency    Currency
+  kind        WalletKind @default(MONEY)
+  designation String?
+  paymentId   String?
+  createdAt   DateTime   @default(now())
+  user        User?      @relation(fields: [userId], references: [id])
+}
+
+model Refund {
+  id           String       @id @default(cuid())
+  paymentId    String?
+  enrollmentId String?
+  studentId    String
+  amountMinor  Int
+  currency     Currency
+  asPoints     Boolean      @default(false) // refunded into wallet as points vs money
+  status       RefundStatus @default(REQUESTED)
+  reason       String?
+  requestedById String?
+  approvedById String?
+  createdAt    DateTime     @default(now())
+}
+
+// ====================== COMMUNICATIONS =======================================
+
+model Notification {
+  id        String              @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String
+  channel   NotificationChannel @default(IN_APP)
+  metadata  Json?
+  readAt    DateTime?
+  createdAt DateTime            @default(now())
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+}
+
+model Announcement {
+  id         String         @id @default(cuid())
+  offeringId String
+  authorId   String
+  title      String         // translatable
+  body       String         // translatable
+  createdAt  DateTime       @default(now())
+  offering   CourseOffering @relation(fields: [offeringId], references: [id], onDelete: Cascade)
+}
+
+model DiscussionBoard {
+  id          String           @id @default(cuid())
+  offeringId  String           @unique
+  allowStudentThreads Boolean  @default(true)
+  offering    CourseOffering   @relation(fields: [offeringId], references: [id], onDelete: Cascade)
+  threads     DiscussionThread[]
+}
+
+model DiscussionThread {
+  id                    String           @id @default(cuid())
+  boardId               String
+  authorId              String
+  title                 String
+  visibility            ThreadVisibility @default(OPEN)
+  isGraded              Boolean          @default(false)
+  participationMinWords Int?
+  participationMinPosts Int?
+  participationMinReplies Int?
+  locked                Boolean          @default(false)
+  pinned                Boolean          @default(false)
+  createdAt             DateTime         @default(now())
+  board                 DiscussionBoard  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  posts                 DiscussionPost[]
+  grades                DiscussionGrade[]
+}
+
+model DiscussionPost {
+  id           String           @id @default(cuid())
+  threadId     String
+  authorId     String
+  parentPostId String?
+  body         String
+  attachments  String[]
+  createdAt    DateTime         @default(now())
+  editedAt     DateTime?
+  deletedAt    DateTime?
+  thread       DiscussionThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  author       User             @relation(fields: [authorId], references: [id])
+  parent       DiscussionPost?  @relation("PostReplies", fields: [parentPostId], references: [id])
+  replies      DiscussionPost[] @relation("PostReplies")
+}
+
+model DiscussionGrade {
+  id         String           @id @default(cuid())
+  threadId   String
+  studentId  String
+  autoScore  Float?           // computed from participation requirement
+  finalScore Float?
+  overridden Boolean          @default(false)
+  feedback   String?
+  gradedById String?
+  gradedAt   DateTime?
+  thread     DiscussionThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  student    User             @relation(fields: [studentId], references: [id])
+
+  @@unique([threadId, studentId])
+}
+
+// ====================== AUDIT & SETTINGS =====================================
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?  // null = system
+  actorRole  String?
+  action     String   // e.g. "application.accept", "grade.lock", "payment.record"
+  entityType String?
+  entityId   String?
+  before     Json?
+  after      Json?
+  ip         String?
+  userAgent  String?
+  requestId  String?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([entityType, entityId])
+  @@index([action, createdAt])
+}
+
+model Setting {
+  key       String   @id // "late_penalty.escalating", "attendance.default_threshold", "zoom.concurrent_hosts"
+  value     Json
+  updatedById String?
+  updatedAt DateTime @updatedAt
+}
+
+// ====================== BRANDING & THEME =====================================
+
+// Admin-configurable branding + theme tokens. Only one row isActive at a time
+// (enforced in the service layer). Editable by Administrative Admin & Super Admin.
+model Theme {
+  id           String   @id @default(cuid())
+  name         String
+  isActive     Boolean  @default(false)
+  siteName     String   @default("Spims")
+  logoLightUrl String?
+  logoDarkUrl  String?
+  faviconUrl   String?
+  // design tokens for BOTH modes: { light: {colors,fonts,radius,...}, dark: {...} }
+  tokens       Json
+  updatedById  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

@@ -1,0 +1,56 @@
+{
+  "common": {
+    "appName": "سبيمز",
+    "loading": "جارٍ التحميل…",
+    "error": "حدث خطأ",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "confirm": "تأكيد",
+    "back": "رجوع",
+    "next": "التالي",
+    "search": "بحث"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "courses": "المقررات",
+    "grades": "الدرجات",
+    "wallet": "المحفظة",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "verifyEmail": "تحقق من بريدك الإلكتروني",
+    "otpPrompt": "أدخل الرمز المكوّن من 6 أرقام المُرسَل إلى بريدك"
+  },
+  "locale": {
+    "en": "English",
+    "ar": "العربية",
+    "fr": "Français",
+    "switchLanguage": "تغيير اللغة"
+  },
+  "theme": {
+    "light": "فاتح",
+    "dark": "داكن",
+    "system": "تلقائي",
+    "toggle": "تبديل السمة"
+  },
+  "errors": {
+    "unauthorized": "غير مصرح لك بإجراء هذا الإجراء",
+    "forbidden": "وصول مرفوض",
+    "notFound": "غير موجود",
+    "validation": "خطأ في التحقق",
+    "internal": "حدث خطأ داخلي"
+  },
+  "landing": {
+    "headline": "سبيمز — التميز الأكاديمي الأرثوذكسي",
+    "subtitle": "نظام معلومات الطلاب وإدارة التعلم"
+  }
+}

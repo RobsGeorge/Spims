@@ -1,0 +1,56 @@
+{
+  "common": {
+    "appName": "Spims",
+    "loading": "Chargement…",
+    "error": "Une erreur s'est produite",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "next": "Suivant",
+    "search": "Rechercher"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "courses": "Cours",
+    "grades": "Notes",
+    "wallet": "Portefeuille",
+    "settings": "Paramètres",
+    "logout": "Se déconnecter"
+  },
+  "auth": {
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "email": "Email",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "verifyEmail": "Vérifiez votre email",
+    "otpPrompt": "Entrez le code à 6 chiffres envoyé à votre email"
+  },
+  "locale": {
+    "en": "English",
+    "ar": "العربية",
+    "fr": "Français",
+    "switchLanguage": "Changer de langue"
+  },
+  "theme": {
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système",
+    "toggle": "Basculer le thème"
+  },
+  "errors": {
+    "unauthorized": "Vous n'êtes pas autorisé à effectuer cette action",
+    "forbidden": "Accès refusé",
+    "notFound": "Introuvable",
+    "validation": "Erreur de validation",
+    "internal": "Une erreur interne s'est produite"
+  },
+  "landing": {
+    "headline": "Spims — Excellence académique orthodoxe",
+    "subtitle": "Système d'information étudiant et de gestion de l'apprentissage"
+  }
+}

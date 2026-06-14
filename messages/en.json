@@ -1,0 +1,56 @@
+{
+  "common": {
+    "appName": "Spims",
+    "loading": "Loading…",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "courses": "Courses",
+    "grades": "Grades",
+    "wallet": "Wallet",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "auth": {
+    "login": "Log in",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset password",
+    "verifyEmail": "Verify your email",
+    "otpPrompt": "Enter the 6-digit code sent to your email"
+  },
+  "locale": {
+    "en": "English",
+    "ar": "العربية",
+    "fr": "Français",
+    "switchLanguage": "Switch language"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toggle": "Toggle theme"
+  },
+  "errors": {
+    "unauthorized": "You are not authorized to perform this action",
+    "forbidden": "Access denied",
+    "notFound": "Not found",
+    "validation": "Validation error",
+    "internal": "An internal error occurred"
+  },
+  "landing": {
+    "headline": "Spims — Orthodox Academic Excellence",
+    "subtitle": "Student Information & Learning Management System"
+  }
+}
