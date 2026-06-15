@@ -296,6 +296,7 @@ model User {
   donations        Donation[]
   invoices         Invoice[]
   payments         Payment[]
+  paymentBatches   PaymentBatch[]
   weekProgress     WeekProgress[]
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
@@ -784,6 +785,7 @@ model Enrollment {
   offering       CourseOffering  @relation(fields: [offeringId], references: [id])
   studentProgram StudentProgram? @relation(fields: [studentProgramId], references: [id])
   academicRecord AcademicRecord?
+  invoice        Invoice?
   @@unique([studentId, offeringId])
   @@index([status])
 }
@@ -918,17 +920,21 @@ model ApplicationFieldValue {
 }
 
 model Invoice {
-  id         String        @id @default(cuid())
-  studentId  String
-  currency   Currency
-  totalMinor Int
-  status     InvoiceStatus @default(OPEN)
-  dueDate    DateTime?
-  student    User          @relation(fields: [studentId], references: [id])
-  lines      InvoiceLine[]
-  payments   Payment[]
+  id           String        @id @default(cuid())
+  studentId    String
+  enrollmentId String?       @unique
+  currency     Currency
+  totalMinor   Int
+  status       InvoiceStatus @default(OPEN)
+  dueDate      DateTime?
+  student      User          @relation(fields: [studentId], references: [id])
+  enrollment   Enrollment?   @relation(fields: [enrollmentId], references: [id])
+  lines        InvoiceLine[]
+  payments     Payment[]
+  batches      PaymentBatch[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  @@index([studentId, status])
 }
 
 model InvoiceLine {
@@ -940,10 +946,26 @@ model InvoiceLine {
   invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 }
 
+model PaymentBatch {
+  id             String        @id @default(cuid())
+  idempotencyKey String        @unique
+  invoiceId      String
+  studentId      String
+  currency       Currency
+  totalMinor     Int
+  status         PaymentStatus @default(PENDING)
+  invoice        Invoice       @relation(fields: [invoiceId], references: [id])
+  student        User          @relation(fields: [studentId], references: [id])
+  payments       Payment[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
 model Payment {
   id            String        @id @default(cuid())
   studentId     String
   invoiceId     String?
+  batchId       String?
   currency      Currency
   amountMinor   Int
   method        PaymentMethod
@@ -954,10 +976,12 @@ model Payment {
   verifiedById  String?
   receiptSerial String?       @unique
   receiptUrl    String?
-  student       User     @relation(fields: [studentId], references: [id])
-  invoice       Invoice? @relation(fields: [invoiceId], references: [id])
+  student       User          @relation(fields: [studentId], references: [id])
+  invoice       Invoice?      @relation(fields: [invoiceId], references: [id])
+  batch         PaymentBatch? @relation(fields: [batchId], references: [id])
   createdAt DateTime @default(now())
   @@index([status])
+  @@index([batchId])
 }
 
 model WalletAccount {
@@ -1013,6 +1037,15 @@ model Refund {
   requestedById String?
   approvedById  String?
   createdAt     DateTime     @default(now())
+}
+
+model WebhookEvent {
+  id          String   @id @default(cuid())
+  provider    String
+  eventId     String
+  payload     Json?
+  processedAt DateTime @default(now())
+  @@unique([provider, eventId])
 }
 
 model Notification {

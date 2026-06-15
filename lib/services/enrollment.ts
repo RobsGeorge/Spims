@@ -61,7 +61,7 @@ export async function enrollStudent(
 
   const status = rules.waitlist ? EnrollmentStatus.WAITLISTED : EnrollmentStatus.ENROLLED;
 
-  return withAudit(
+  const enrollment = await withAudit(
     { actor, action: "enrollment.self", entityType: "Enrollment", ...ctx },
     async (tx) =>
       tx.enrollment.upsert({
@@ -78,6 +78,21 @@ export async function enrollStudent(
         include: { offering: { include: { course: true } } },
       }),
   );
+
+  if (status === EnrollmentStatus.ENROLLED) {
+    await createInvoiceForEnrollment(actor, enrollment.id, ctx);
+  }
+
+  return enrollment;
+}
+
+async function createInvoiceForEnrollment(
+  actor: SessionUser,
+  enrollmentId: string,
+  ctx?: { ip?: string; userAgent?: string; requestId?: string },
+) {
+  const { createInvoiceForEnrollment: create } = await import("@/lib/services/invoice");
+  return create(actor, enrollmentId, ctx);
 }
 
 export async function overrideEnrollment(
@@ -110,7 +125,10 @@ export async function overrideEnrollment(
           studentProgramId: input.studentProgramId ?? null,
         },
       }),
-  );
+  ).then(async (enrollment) => {
+    await createInvoiceForEnrollment(actor, enrollment.id, ctx);
+    return enrollment;
+  });
 }
 
 export async function dropEnrollment(
@@ -285,7 +303,7 @@ export async function promoteWaitlist(
     take: toPromote,
   });
 
-  return withAudit(
+  const result = await withAudit(
     { actor, action: "enrollment.waitlist", entityType: "CourseOffering", entityId: offeringId, ...ctx },
     async (tx) => {
       for (const e of waitlisted) {
@@ -297,6 +315,12 @@ export async function promoteWaitlist(
       return { promoted: waitlisted.length, ids: waitlisted.map((w) => w.id) };
     },
   );
+
+  for (const id of result.ids) {
+    await createInvoiceForEnrollment(actor, id, ctx);
+  }
+
+  return result;
 }
 
 export async function getStudentEnrollments(studentId: string) {

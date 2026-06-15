@@ -14,6 +14,8 @@ interface Field {
   type: string;
   required: boolean;
   adminNote: string | null;
+  options: string[];
+  allowedFileTypes: string[];
 }
 
 type ProfilePrefill = {
@@ -39,10 +41,17 @@ function profileValueForField(field: Field, profile: ProfilePrefill): string | u
 function initialValuesFromProfile(fields: Field[], profile: ProfilePrefill): Record<string, string> {
   const values: Record<string, string> = {};
   for (const field of fields) {
+    if (field.type === "FILE") continue;
     const value = profileValueForField(field, profile);
     if (value) values[field.id] = value;
   }
   return values;
+}
+
+function extensionAllowed(filename: string, allowed: string[]): boolean {
+  if (allowed.length === 0) return true;
+  const ext = filename.split(".").pop()?.toLowerCase() ?? "";
+  return allowed.some((a) => a.replace(/^\./, "").toLowerCase() === ext);
 }
 
 export function ApplicationRenderer({
@@ -58,6 +67,9 @@ export function ApplicationRenderer({
   const router = useRouter();
   const [profile, setProfile] = useState<ProfilePrefill | null>(null);
   const [values, setValues] = useState<Record<string, string>>({});
+  const [fileUrls, setFileUrls] = useState<Record<string, string>>({});
+  const [fileNames, setFileNames] = useState<Record<string, string>>({});
+  const [uploadingFieldId, setUploadingFieldId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -70,12 +82,57 @@ export function ApplicationRenderer({
       });
   }, [fields]);
 
+  async function uploadFile(field: Field, file: File) {
+    if (!extensionAllowed(file.name, field.allowedFileTypes)) {
+      setError(t("admissions.invalidFileType"));
+      return;
+    }
+
+    setUploadingFieldId(field.id);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/applications/upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          programId,
+          fieldId: field.id,
+          filename: file.name,
+          contentType: file.type || "application/octet-stream",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.configured) {
+        setError(t("admissions.storageUnavailable"));
+        return;
+      }
+
+      const putRes = await fetch(data.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+        body: file,
+      });
+      if (!putRes.ok) {
+        setError(t("admissions.uploadFailed"));
+        return;
+      }
+
+      setFileUrls((prev) => ({ ...prev, [field.id]: data.fileUrl as string }));
+      setFileNames((prev) => ({ ...prev, [field.id]: file.name }));
+    } catch {
+      setError(t("admissions.uploadFailed"));
+    } finally {
+      setUploadingFieldId(null);
+    }
+  }
+
   async function submit() {
     setError(null);
     const payload = fields.map((f) => ({
       fieldId: f.id,
-      value: values[f.id],
-      fileUrl: f.type === "FILE" ? values[f.id] : undefined,
+      value: f.type === "FILE" ? fileNames[f.id] ?? null : values[f.id] ?? null,
+      fileUrl: f.type === "FILE" ? fileUrls[f.id] ?? null : undefined,
     }));
     const res = await fetch("/api/applications", {
       method: "POST",
@@ -89,6 +146,131 @@ export function ApplicationRenderer({
     router.push("/dashboard");
   }
 
+  function renderField(field: Field) {
+    const commonProps = {
+      id: field.id,
+      required: field.required,
+    };
+
+    switch (field.type) {
+      case "TEXTAREA":
+        return (
+          <textarea
+            {...commonProps}
+            className="flex min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            value={values[field.id] ?? ""}
+            onChange={(e) => setValues({ ...values, [field.id]: e.target.value })}
+          />
+        );
+      case "NUMBER":
+        return (
+          <Input
+            {...commonProps}
+            type="number"
+            value={values[field.id] ?? ""}
+            onChange={(e) => setValues({ ...values, [field.id]: e.target.value })}
+          />
+        );
+      case "DATE":
+        return (
+          <Input
+            {...commonProps}
+            type="date"
+            value={values[field.id] ?? ""}
+            onChange={(e) => setValues({ ...values, [field.id]: e.target.value })}
+          />
+        );
+      case "SELECT":
+        return (
+          <select
+            {...commonProps}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            value={values[field.id] ?? ""}
+            onChange={(e) => setValues({ ...values, [field.id]: e.target.value })}
+          >
+            <option value="">—</option>
+            {field.options.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        );
+      case "MULTISELECT": {
+        const selected = values[field.id]?.split(",").filter(Boolean) ?? [];
+        return (
+          <div className="space-y-2 rounded-md border border-input p-3">
+            {field.options.map((opt) => (
+              <label key={opt} className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={selected.includes(opt)}
+                  onChange={(e) => {
+                    const next = e.target.checked
+                      ? [...selected, opt]
+                      : selected.filter((v) => v !== opt);
+                    setValues({ ...values, [field.id]: next.join(",") });
+                  }}
+                />
+                {opt}
+              </label>
+            ))}
+          </div>
+        );
+      }
+      case "CHECKBOX":
+        return (
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={values[field.id] === "true"}
+              onChange={(e) =>
+                setValues({ ...values, [field.id]: e.target.checked ? "true" : "false" })
+              }
+            />
+            {field.label}
+          </label>
+        );
+      case "FILE":
+        return (
+          <div className="space-y-2">
+            <Input
+              {...commonProps}
+              type="file"
+              accept={
+                field.allowedFileTypes.length > 0
+                  ? field.allowedFileTypes.map((t) => `.${t.replace(/^\./, "")}`).join(",")
+                  : undefined
+              }
+              disabled={uploadingFieldId === field.id}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) void uploadFile(field, file);
+              }}
+            />
+            {uploadingFieldId === field.id && (
+              <p className="text-xs text-muted-foreground">{t("admissions.uploading")}</p>
+            )}
+            {fileNames[field.id] && (
+              <p className="text-xs text-muted-foreground">
+                {t("admissions.fileUploaded")}: {fileNames[field.id]}
+              </p>
+            )}
+          </div>
+        );
+      default:
+        return (
+          <Input
+            {...commonProps}
+            value={values[field.id] ?? ""}
+            onChange={(e) => setValues({ ...values, [field.id]: e.target.value })}
+          />
+        );
+    }
+  }
+
+  const isUploading = uploadingFieldId !== null;
+
   return (
     <Card>
       <CardHeader>
@@ -99,23 +281,29 @@ export function ApplicationRenderer({
         {error && <p className="text-sm text-destructive">{error}</p>}
         {profile && (
           <div className="grid gap-2 md:grid-cols-2 text-sm text-muted-foreground">
-            <span>{profile.firstName} {profile.lastName}</span>
+            <span>
+              {profile.firstName} {profile.lastName}
+            </span>
             <span>{profile.email}</span>
           </div>
         )}
         {fields.map((field) => (
           <div key={field.id}>
-            <Label>{field.label}{field.required ? " *" : ""}</Label>
-            {field.adminNote && (
+            {field.type !== "CHECKBOX" && (
+              <Label htmlFor={field.id}>
+                {field.label}
+                {field.required ? " *" : ""}
+              </Label>
+            )}
+            {field.adminNote && field.type !== "CHECKBOX" && (
               <p className="text-xs text-muted-foreground mb-1">{field.adminNote}</p>
             )}
-            <Input
-              value={values[field.id] ?? ""}
-              onChange={(e) => setValues({ ...values, [field.id]: e.target.value })}
-            />
+            {renderField(field)}
           </div>
         ))}
-        <Button onClick={submit}>{t("admissions.submit")}</Button>
+        <Button onClick={submit} disabled={isUploading}>
+          {t("admissions.submit")}
+        </Button>
       </CardContent>
     </Card>
   );

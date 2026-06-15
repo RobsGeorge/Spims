@@ -9,6 +9,8 @@ import {
   Award,
   Wallet,
   Settings,
+  CreditCard,
+  Banknote,
   Users,
   Palette,
   GraduationCap,
@@ -40,7 +42,23 @@ const NAV_ITEMS: NavItem[] = [
   { labelKey: "nav.degreeAudit", href: "/degree-audit", icon: ClipboardCheck, roles: [RoleType.STUDENT] },
   { labelKey: "nav.grades", href: "/grades", icon: Award },
   { labelKey: "nav.wallet", href: "/wallet", icon: Wallet },
+  { labelKey: "nav.billing", href: "/billing", icon: CreditCard },
   { labelKey: "nav.settings", href: "/settings", icon: Settings },
+];
+
+const FINANCE_ITEMS: NavItem[] = [
+  {
+    labelKey: "nav.payments",
+    href: "/admin/payments",
+    icon: Banknote,
+    roles: [RoleType.FINANCIAL_ADMIN, RoleType.SUPER_ADMIN],
+  },
+  {
+    labelKey: "nav.adminWallet",
+    href: "/admin/wallet",
+    icon: Wallet,
+    roles: [RoleType.FINANCIAL_ADMIN, RoleType.SUPER_ADMIN],
+  },
 ];
 
 const ADMIN_ITEMS: NavItem[] = [
@@ -153,6 +171,9 @@ export function Sidebar({ user, locale }: { user: SessionUser; locale: string })
   const visibleAcademic = ACADEMIC_ITEMS.filter(
     (item) => !item.roles || item.roles.some((r) => user.roles.includes(r)),
   );
+  const visibleFinance = FINANCE_ITEMS.filter(
+    (item) => !item.roles || item.roles.some((r) => user.roles.includes(r)),
+  );
 
   return (
     <aside className="w-64 border-e bg-card hidden md:flex flex-col shrink-0">
@@ -173,6 +194,17 @@ export function Sidebar({ user, locale }: { user: SessionUser; locale: string })
               {t("nav.academic")}
             </div>
             {visibleAcademic.map((item) => (
+              <NavLink key={item.href} item={item} locale={locale} pathname={pathname} t={t} />
+            ))}
+          </>
+        )}
+
+        {visibleFinance.length > 0 && (
+          <>
+            <div className="pt-2 pb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              {t("nav.finance")}
+            </div>
+            {visibleFinance.map((item) => (
               <NavLink key={item.href} item={item} locale={locale} pathname={pathname} t={t} />
             ))}
           </>
