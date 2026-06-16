@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { db } from "@/lib/db";
 import { getApplicationForm } from "@/lib/services/applicationForm";
@@ -12,7 +12,7 @@ export default async function ApplyPage({
   params: Promise<{ programId: string }>;
 }) {
   const t = await getTranslations();
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "application.submit");
   const { programId } = await params;
 

@@ -1,4 +1,4 @@
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { getAssessmentById, assertStudentEnrolled } from "@/lib/services/assessment";
 import { db } from "@/lib/db";
@@ -9,7 +9,7 @@ export default async function ExamPage({
 }: {
   params: Promise<{ offeringId: string; assessmentId: string }>;
 }) {
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "assessment.take");
   const { offeringId, assessmentId } = await params;
 

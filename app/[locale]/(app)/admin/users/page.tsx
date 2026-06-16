@@ -1,12 +1,12 @@
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { listUsers } from "@/lib/services/user";
 import { UsersTable } from "@/components/admin/users-table";
 
 export default async function AdminUsersPage() {
   const t = await getTranslations();
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "user.manage");
 
   const { users, total } = await listUsers({ limit: 50 });

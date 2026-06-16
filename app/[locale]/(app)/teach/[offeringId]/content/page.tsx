@@ -1,5 +1,5 @@
 import { RoleType } from "@prisma/client";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { getOfferingById } from "@/lib/services/offering";
 import { listWeeks } from "@/lib/services/content";
@@ -11,7 +11,7 @@ export default async function TeachContentPage({
 }: {
   params: Promise<{ offeringId: string }>;
 }) {
-  const session = await requireSession();
+  const session = await requireAppSession();
   const { offeringId } = await params;
 
   const isAca =

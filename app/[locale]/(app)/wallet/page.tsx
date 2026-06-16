@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { getWalletSummary } from "@/lib/services/wallet";
 import { WalletPanel } from "@/components/finance/wallet-panel";
@@ -7,7 +7,7 @@ import { DonateForm } from "@/components/finance/point-grant-form";
 
 export default async function WalletPage() {
   const t = await getTranslations("finance");
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "wallet.viewOwn");
 
   const wallet = await getWalletSummary(session.id);

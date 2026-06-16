@@ -1,11 +1,11 @@
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { PointGrantForm } from "@/components/finance/point-grant-form";
 
 export default async function AdminWalletPage() {
   const t = await getTranslations("finance");
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "wallet.manage");
 
   return (

@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize, can } from "@/lib/auth/authorize";
 import { listCourses } from "@/lib/services/course";
 import { listSemesters } from "@/lib/services/semester";
@@ -8,7 +8,7 @@ import { OfferingsTable } from "@/components/admin/offerings-table";
 
 export default async function AdminOfferingsPage() {
   const t = await getTranslations();
-  const session = await requireSession();
+  const session = await requireAppSession();
 
   const canManage = can(session, "offering.manage");
   const canSetPricing = can(session, "offering.setPricing");

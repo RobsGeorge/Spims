@@ -1,5 +1,5 @@
 import { getTranslations as getIntlTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { getTranslations } from "@/lib/services/translation";
 import { TranslationEditor } from "@/components/admin/translation-editor";
@@ -15,7 +15,7 @@ export default async function TranslationsPage({
   searchParams: Promise<SearchParams>;
 }) {
   const t = await getIntlTranslations();
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "translation.edit");
 
   const { entityType, entityId } = await searchParams;

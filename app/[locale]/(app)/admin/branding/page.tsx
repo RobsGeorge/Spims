@@ -1,12 +1,12 @@
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { listThemes } from "@/lib/services/theme";
 import { BrandingEditor } from "@/components/admin/branding-editor";
 
 export default async function AdminBrandingPage() {
   const t = await getTranslations();
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "branding.manage");
 
   const themes = await listThemes();

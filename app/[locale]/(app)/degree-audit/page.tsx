@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { db } from "@/lib/db";
 import { getDegreeAudit } from "@/lib/services/degreeAudit";
@@ -10,7 +10,7 @@ export default async function DegreeAuditPage({
   searchParams: Promise<{ programId?: string }>;
 }) {
   const t = await getTranslations();
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "degreeAudit.view");
 
   const programs = await db.studentProgram.findMany({

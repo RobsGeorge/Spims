@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { listOfferings } from "@/lib/services/offering";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 export default async function TeachPage() {
   const t = await getTranslations("gradebook");
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "gradebook.enterGrades");
 
   const { items } = await listOfferings(session, { limit: 50 });

@@ -1,4 +1,7 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
 import { db } from "@/lib/db";
 import { RoleType } from "@prisma/client";
 
@@ -16,7 +19,7 @@ export interface SessionUser {
 }
 
 /** Read the session from the httpOnly cookie and return the user, or null. */
-export async function getSession(): Promise<SessionUser | null> {
+export const getSession = cache(async (): Promise<SessionUser | null> => {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
   if (!token) return null;
@@ -47,9 +50,19 @@ export async function getSession(): Promise<SessionUser | null> {
     preferredLocale: user.preferredLocale,
     countryCode: user.countryCode,
   };
+});
+
+/** For authenticated app pages — redirects to login instead of throwing. */
+export async function requireAppSession(): Promise<SessionUser> {
+  const user = await getSession();
+  if (!user) {
+    const locale = await getLocale();
+    redirect(`/${locale}/login`);
+  }
+  return user;
 }
 
-/** Require a session or throw 401. */
+/** Require a session or throw 401 (API routes). */
 export async function requireSession(): Promise<SessionUser> {
   const user = await getSession();
   if (!user) {

@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { db } from "@/lib/db";
 import { computeEnrollmentPercent } from "@/lib/services/gradebook";
@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function GradesPage() {
   const t = await getTranslations("gradebook");
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "transcript.viewOwn");
 
   const enrollments = await db.enrollment.findMany({

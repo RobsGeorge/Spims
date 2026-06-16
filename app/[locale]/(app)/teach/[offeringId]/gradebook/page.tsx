@@ -1,6 +1,6 @@
 import { RoleType } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize, can } from "@/lib/auth/authorize";
 import { getOfferingGradebook } from "@/lib/services/gradebook";
 import { GradebookPanel } from "@/components/gradebook/gradebook-panel";
@@ -11,7 +11,7 @@ export default async function TeachGradebookPage({
   params: Promise<{ offeringId: string }>;
 }) {
   const t = await getTranslations("gradebook");
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "gradebook.enterGrades");
   const { offeringId } = await params;
 

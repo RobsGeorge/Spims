@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { listPrograms } from "@/lib/services/program";
 import { getApplicationForm } from "@/lib/services/applicationForm";
@@ -14,7 +14,7 @@ export default async function AdminAdmissionsPage({
   searchParams: Promise<{ programId?: string }>;
 }) {
   const t = await getTranslations();
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "applicationForm.manage");
 
   const { programId } = await searchParams;

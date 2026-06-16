@@ -1,12 +1,12 @@
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { listTemplates } from "@/lib/services/assessmentTemplate";
 import { AssessmentTemplateEditor } from "@/components/admin/assessment-template-editor";
 
 export default async function AssessmentTemplatesPage() {
   const t = await getTranslations();
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "assessmentTemplate.manage");
 
   const templates = await listTemplates();

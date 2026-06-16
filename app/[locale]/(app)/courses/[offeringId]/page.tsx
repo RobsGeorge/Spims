@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { db } from "@/lib/db";
 import { assertStudentEnrolled } from "@/lib/services/assessment";
@@ -13,7 +13,7 @@ export default async function OfferingCoursePage({
   params: Promise<{ offeringId: string }>;
 }) {
   const t = await getTranslations("exam");
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "offering.viewContent");
   const { offeringId } = await params;
 

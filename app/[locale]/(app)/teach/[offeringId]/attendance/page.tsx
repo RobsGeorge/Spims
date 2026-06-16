@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { listOfferingSessions } from "@/lib/services/session";
 import { AttendancePanel } from "@/components/attendance/attendance-panel";
@@ -10,7 +10,7 @@ export default async function TeachAttendancePage({
   params: Promise<{ offeringId: string }>;
 }) {
   const t = await getTranslations("attendance");
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "attendance.import");
   const { offeringId } = await params;
 

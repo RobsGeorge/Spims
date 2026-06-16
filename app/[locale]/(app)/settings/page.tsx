@@ -1,11 +1,11 @@
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { getMe } from "@/lib/services/user";
 import { ProfileForm } from "@/components/settings/profile-form";
 
 export default async function SettingsPage() {
   const t = await getTranslations();
-  const session = await requireSession();
+  const session = await requireAppSession();
   const user = await getMe(session.id);
 
   return (

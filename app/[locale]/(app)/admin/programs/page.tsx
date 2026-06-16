@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { requireSession } from "@/lib/auth/session";
+import { requireAppSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { listPrograms } from "@/lib/services/program";
 import { listGradingSchemes } from "@/lib/services/gradingScheme";
@@ -8,7 +8,7 @@ import { ProgramsTable } from "@/components/admin/programs-table";
 
 export default async function ProgramsPage() {
   const t = await getTranslations();
-  const session = await requireSession();
+  const session = await requireAppSession();
   await authorize(session, "program.manage");
 
   const [{ items: programs }, schemes, { items: courses }] = await Promise.all([
