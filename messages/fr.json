@@ -97,7 +97,16 @@
       "roles": "Rôles",
       "status": "Statut",
       "actions": "Actions"
-    }
+    },
+    "empty": "Aucun utilisateur"
+  },
+  "a11y": {
+    "skipToContent": "Aller au contenu principal"
+  },
+  "shell": {
+    "menu": "Menu de navigation",
+    "openMenu": "Ouvrir le menu",
+    "sidebar": "Navigation principale"
   },
   "settings": {
     "title": "Paramètres",

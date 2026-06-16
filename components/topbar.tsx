@@ -15,9 +15,18 @@ import {
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationsBell } from "@/components/notifications/notifications-bell";
+import { MobileMenuButton } from "@/components/shell/mobile-nav";
 import type { SessionUser } from "@/lib/auth/session";
 
-export function Topbar({ user, locale }: { user: SessionUser; locale: string }) {
+export function Topbar({
+  user,
+  locale,
+  onOpenMenu,
+}: {
+  user: SessionUser;
+  locale: string;
+  onOpenMenu?: () => void;
+}) {
   const t = useTranslations();
   const router = useRouter();
   const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`.toUpperCase();
@@ -30,6 +39,7 @@ export function Topbar({ user, locale }: { user: SessionUser; locale: string }) 
 
   return (
     <header className="h-14 border-b flex items-center px-4 gap-3 shrink-0">
+      {onOpenMenu && <MobileMenuButton onOpen={onOpenMenu} />}
       <div className="flex-1" />
       <LocaleSwitcher />
       <ThemeToggle />

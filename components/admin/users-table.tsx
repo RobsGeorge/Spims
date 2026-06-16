@@ -4,6 +4,9 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ResponsiveTable } from "@/components/data/responsive-table";
 import type { RoleType, UserStatus } from "@prisma/client";
 
 interface User {
@@ -47,8 +50,45 @@ export function UsersTable({ users, actorRoles }: { users: User[]; actorRoles: R
 
   void actorRoles;
 
+  if (users.length === 0) {
+    return <EmptyState title={t("users.empty")} />;
+  }
+
   return (
-    <div className="rounded-md border overflow-x-auto">
+    <ResponsiveTable
+      mobileCards={users.map((user) => (
+        <Card key={user.id}>
+          <CardContent className="pt-4 space-y-2">
+            <p className="font-medium">
+              {user.firstName} {user.lastName}
+            </p>
+            <p className="text-sm text-muted-foreground">{user.email}</p>
+            <div className="flex flex-wrap gap-1">
+              {user.roles.map(({ role }) => (
+                <Badge key={role} variant="outline" className="text-xs">
+                  {role.replace(/_/g, " ")}
+                </Badge>
+              ))}
+            </div>
+            <Badge variant={STATUS_VARIANT[user.status]}>
+              {t(`common.${user.status.toLowerCase()}` as Parameters<typeof t>[0])}
+            </Badge>
+            <div className="flex flex-wrap gap-2 pt-2">
+              <Button
+                variant={user.isReviewer ? "default" : "outline"}
+                size="sm"
+                onClick={() => toggleReviewer(user.id, user.isReviewer)}
+              >
+                {user.isReviewer ? t("users.reviewerOn") : t("users.reviewerOff")}
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleSuspend(user.id, user.status)}>
+                {user.status === "SUSPENDED" ? t("users.activate") : t("users.suspend")}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    >
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b bg-muted/50">
@@ -103,9 +143,6 @@ export function UsersTable({ users, actorRoles }: { users: User[]; actorRoles: R
           ))}
         </tbody>
       </table>
-      {users.length === 0 && (
-        <div className="py-12 text-center text-muted-foreground text-sm">{t("common.search")}</div>
-      )}
-    </div>
+    </ResponsiveTable>
   );
 }

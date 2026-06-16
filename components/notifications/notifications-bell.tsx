@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,7 @@ type NotificationRow = {
 };
 
 export function NotificationsBell() {
+  const t = useTranslations("notification");
   const router = useRouter();
   const [notifications, setNotifications] = useState<NotificationRow[]>([]);
   const unread = notifications.filter((n) => !n.readAt).length;
@@ -50,7 +52,7 @@ export function NotificationsBell() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">
         {notifications.length === 0 && (
-          <div className="px-3 py-2 text-sm text-muted-foreground">No notifications</div>
+          <div className="px-3 py-2 text-sm text-muted-foreground">{t("empty")}</div>
         )}
         {notifications.map((n) => (
           <DropdownMenuItem key={n.id} className="flex flex-col items-start gap-1" onClick={() => void markRead(n.id)}>

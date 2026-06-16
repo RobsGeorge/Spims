@@ -97,7 +97,16 @@
       "roles": "Roles",
       "status": "Status",
       "actions": "Actions"
-    }
+    },
+    "empty": "No users found"
+  },
+  "a11y": {
+    "skipToContent": "Skip to main content"
+  },
+  "shell": {
+    "menu": "Navigation menu",
+    "openMenu": "Open menu",
+    "sidebar": "Main navigation"
   },
   "settings": {
     "title": "Settings",

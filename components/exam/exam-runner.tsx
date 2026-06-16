@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExamTimer } from "@/components/exam/exam-timer";
 import { IntegrityGuard } from "@/components/exam/integrity-guard";
 import { QuestionPrompt, QuestionRenderer } from "@/components/exam/question-renderer";
+import { useMediaQuery } from "@/lib/hooks/use-media-query";
 
 type ExamSnapshot = {
   questions: Array<{
@@ -40,6 +41,7 @@ export function ExamRunner({
   initialAttempt?: AttemptData | null;
 }) {
   const t = useTranslations("exam");
+  const isMobile = useMediaQuery("(max-width: 767px)");
   const [attempt, setAttempt] = useState<AttemptData | null>(initialAttempt ?? null);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -56,6 +58,7 @@ export function ExamRunner({
 
   const questions = attempt?.examSnapshot?.questions ?? [];
   const current = questions[currentIndex];
+  const showOneAtATime = attempt?.assessment.oneAtATime || isMobile;
 
   const debouncedSave = useCallback(
     (questionId: string, response: unknown) => {
@@ -135,7 +138,7 @@ export function ExamRunner({
         attemptId={attempt.id}
       />
       <main className="flex-1 overflow-auto p-4">
-        {attempt.assessment.oneAtATime ? (
+        {showOneAtATime ? (
           current && (
             <Card className="max-w-2xl mx-auto">
               <CardContent className="space-y-4 pt-6">
@@ -173,7 +176,7 @@ export function ExamRunner({
       </main>
       <footer className="flex items-center justify-between border-t px-4 py-3">
         <div className="flex gap-2">
-          {attempt.assessment.oneAtATime && (
+          {showOneAtATime && (
             <>
               <Button
                 variant="outline"
@@ -192,7 +195,7 @@ export function ExamRunner({
             </>
           )}
         </div>
-        {attempt.assessment.oneAtATime && (
+        {showOneAtATime && (
           <span className="text-sm text-muted-foreground">
             {currentIndex + 1} / {questions.length}
           </span>
