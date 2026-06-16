@@ -4,18 +4,20 @@ import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 
 export function IntegrityGuard({
-  enabled,
+  logFocusLoss,
+  enforceFullScreen,
   attemptId,
   onFocusLoss,
 }: {
-  enabled: boolean;
+  logFocusLoss: boolean;
+  enforceFullScreen: boolean;
   attemptId: string;
   onFocusLoss?: () => void;
 }) {
   const t = useTranslations("exam");
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!logFocusLoss) return;
 
     const report = () => {
       onFocusLoss?.();
@@ -33,19 +35,19 @@ export function IntegrityGuard({
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("blur", report);
     };
-  }, [enabled, attemptId, onFocusLoss]);
+  }, [logFocusLoss, attemptId, onFocusLoss]);
 
   useEffect(() => {
-    if (!enabled || !document.documentElement.requestFullscreen) return;
+    if (!enforceFullScreen || !document.documentElement.requestFullscreen) return;
     void document.documentElement.requestFullscreen().catch(() => undefined);
     return () => {
       if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
     };
-  }, [enabled]);
+  }, [enforceFullScreen]);
 
-  if (!enabled) return null;
+  if (!logFocusLoss) return null;
 
   return (
-    <p className="text-xs text-muted-foreground">{t("integrityNotice")}</p>
+    <p className="text-xs text-muted-foreground px-4">{t("integrityNotice")}</p>
   );
 }

@@ -130,24 +130,45 @@ export function ExamRunner({
         <ExamTimer dueAt={attempt.dueAt} />
       </header>
       <IntegrityGuard
-        enabled={attempt.assessment.logFocusLoss || attempt.assessment.enforceFullScreen}
+        logFocusLoss={attempt.assessment.logFocusLoss}
+        enforceFullScreen={attempt.assessment.enforceFullScreen}
         attemptId={attempt.id}
       />
       <main className="flex-1 overflow-auto p-4">
-        {current && (
-          <Card className="max-w-2xl mx-auto">
-            <CardContent className="space-y-4 pt-6">
-              <QuestionPrompt question={current} />
-              <QuestionRenderer
-                question={current}
-                value={answers[current.id]}
-                onChange={(v) => {
-                  setAnswers((prev) => ({ ...prev, [current.id]: v }));
-                  debouncedSave(current.id, v);
-                }}
-              />
-            </CardContent>
-          </Card>
+        {attempt.assessment.oneAtATime ? (
+          current && (
+            <Card className="max-w-2xl mx-auto">
+              <CardContent className="space-y-4 pt-6">
+                <QuestionPrompt question={current} />
+                <QuestionRenderer
+                  question={current}
+                  value={answers[current.id]}
+                  onChange={(v) => {
+                    setAnswers((prev) => ({ ...prev, [current.id]: v }));
+                    debouncedSave(current.id, v);
+                  }}
+                />
+              </CardContent>
+            </Card>
+          )
+        ) : (
+          <div className="max-w-2xl mx-auto space-y-4">
+            {questions.map((question) => (
+              <Card key={question.id}>
+                <CardContent className="space-y-4 pt-6">
+                  <QuestionPrompt question={question} />
+                  <QuestionRenderer
+                    question={question}
+                    value={answers[question.id]}
+                    onChange={(v) => {
+                      setAnswers((prev) => ({ ...prev, [question.id]: v }));
+                      debouncedSave(question.id, v);
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </main>
       <footer className="flex items-center justify-between border-t px-4 py-3">
@@ -171,9 +192,11 @@ export function ExamRunner({
             </>
           )}
         </div>
-        <span className="text-sm text-muted-foreground">
-          {currentIndex + 1} / {questions.length}
-        </span>
+        {attempt.assessment.oneAtATime && (
+          <span className="text-sm text-muted-foreground">
+            {currentIndex + 1} / {questions.length}
+          </span>
+        )}
         <Button onClick={() => void submitExam()} disabled={submitting}>
           {submitting ? t("submitting") : t("submit")}
         </Button>

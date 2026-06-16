@@ -6,6 +6,15 @@ import { AppError } from "@/lib/errors";
 import { computeEnrollmentPercent, isGradeLocked } from "@/lib/services/gradebook";
 import type { ReopenGradesInput } from "@/lib/validation/assessment";
 
+export function computeWeightedGpa(
+  records: Array<{ gpaPoints: number; creditHours: number }>,
+): number | null {
+  const totalCredits = records.reduce((s, r) => s + r.creditHours, 0);
+  if (totalCredits <= 0) return null;
+  const weighted = records.reduce((s, r) => s + r.gpaPoints * r.creditHours, 0);
+  return Math.round((weighted / totalCredits) * 100) / 100;
+}
+
 function letterForPercent(
   percent: number,
   bands: Array<{ letter: string; minPercent: number; maxPercent: number; gpaPoints: number; isPassing: boolean }>,
@@ -176,11 +185,11 @@ export async function lockOfferingGrades(
           const relevant = records.filter((r) =>
             fulfilledRecords.some((fr) => fr.id === r.id),
           );
-          if (relevant.length > 0) {
-            const avg = relevant.reduce((s, r) => s + r.gpaPoints, 0) / relevant.length;
+          const weightedGpa = computeWeightedGpa(relevant);
+          if (weightedGpa != null) {
             await tx.studentProgram.update({
               where: { id: sp.id },
-              data: { cachedGpa: Math.round(avg * 100) / 100 },
+              data: { cachedGpa: weightedGpa },
             });
           }
         }

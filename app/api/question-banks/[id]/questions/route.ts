@@ -26,7 +26,14 @@ export async function GET(
   try {
     const user = await requireSession();
     const { id } = await params;
-    await authorize(user, "questionBank.manage");
+    const offeringId = await getBankOfferingId(id);
+    const { assertOfferingContentAccess } = await import("@/lib/services/offeringScope");
+    await authorize(user, "questionBank.manage", {
+      scopeCheck: async () => {
+        await assertOfferingContentAccess(user.id, offeringId, user.roles);
+        return true;
+      },
+    });
     const questions = await listQuestions(id);
     return NextResponse.json({ questions });
   } catch (err) {

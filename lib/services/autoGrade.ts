@@ -30,11 +30,18 @@ function gradeMcqMulti(
   return match ? question.points : 0;
 }
 
+function parseTrueFalseResponse(response: unknown): boolean | null {
+  if (response === true || response === "true") return true;
+  if (response === false || response === "false") return false;
+  return null;
+}
+
 function gradeTrueFalse(
   question: QuestionWithOptions,
   response: unknown,
 ): number | null {
-  const val = response === true || response === "true";
+  const val = parseTrueFalseResponse(response);
+  if (val === null) return 0;
   const correct = question.options.find((o) => o.isCorrect);
   if (!correct) return null;
   const correctVal = normalizeText(correct.text) === "true";

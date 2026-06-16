@@ -41,6 +41,20 @@ describe("autoGrade", () => {
     expect(gradeObjectiveAnswer(question, 50)).toBe(0);
   });
 
+  it("grades true/false and rejects unanswered when correct is false", () => {
+    const question = q({
+      type: "TRUE_FALSE",
+      options: [
+        { id: "t", questionId: "q1", text: "true", isCorrect: false, matchKey: null, order: 0 },
+        { id: "f", questionId: "q1", text: "false", isCorrect: true, matchKey: null, order: 1 },
+      ],
+    });
+    expect(gradeObjectiveAnswer(question, false)).toBe(10);
+    expect(gradeObjectiveAnswer(question, true)).toBe(0);
+    expect(gradeObjectiveAnswer(question, null)).toBe(0);
+    expect(gradeObjectiveAnswer(question, undefined)).toBe(0);
+  });
+
   it("essay is not auto gradable", () => {
     expect(isAutoGradable("ESSAY")).toBe(false);
     const question = q({ type: "ESSAY", options: [] });
