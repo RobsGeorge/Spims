@@ -41,7 +41,9 @@
     "billing": "Billing",
     "finance": "Finance",
     "payments": "Payments",
-    "adminWallet": "Wallet grants"
+    "adminWallet": "Wallet grants",
+    "teach": "Teaching",
+    "teaching": "Teaching"
   },
   "auth": {
     "login": "Log in",
@@ -403,5 +405,40 @@
     "donateSuccess": "Thank you for your donation",
     "donateFailed": "Donation failed",
     "invalidForm": "Please check the form fields"
+  },
+  "exam": {
+    "title": "Exam",
+    "start": "Start",
+    "submit": "Submit",
+    "submitting": "Submitting…",
+    "startFailed": "Could not start exam",
+    "submitFailed": "Could not submit exam",
+    "timeRemaining": "{min}:{sec} remaining",
+    "timeExpired": "Time expired",
+    "integrityNotice": "Focus loss is logged. Stay in full-screen mode.",
+    "previous": "Previous",
+    "next": "Next",
+    "availableAssessments": "Assessments",
+    "noAssessments": "No assessments available"
+  },
+  "gradebook": {
+    "title": "Gradebook",
+    "studentTitle": "My grades",
+    "teachTitle": "My offerings",
+    "openGradebook": "Open gradebook",
+    "student": "Student",
+    "overall": "Overall",
+    "status": "Status",
+    "noGrade": "No grade yet",
+    "noEnrollments": "No enrolled courses",
+    "viewCourse": "View course",
+    "submitLock": "Submit & lock grades",
+    "lockSuccess": "Locked {count} enrollment(s)",
+    "lockFailed": "Could not lock grades",
+    "reopenTitle": "Reopen grades",
+    "reopenReason": "Reason for reopening",
+    "reopen": "Reopen",
+    "reopenSuccess": "Reopened {count} enrollment(s)",
+    "reopenFailed": "Could not reopen grades"
   }
 }

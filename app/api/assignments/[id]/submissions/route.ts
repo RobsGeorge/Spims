@@ -1,0 +1,24 @@
+import { NextRequest, NextResponse } from "next/server";
+import { requireSession } from "@/lib/auth/session";
+import { authorize } from "@/lib/auth/authorize";
+import { parseBody } from "@/lib/validation";
+import { submitAssignmentSchema } from "@/lib/validation/assessment";
+import { submitAssignment } from "@/lib/services/assignment";
+import { requestContext } from "@/lib/api/assessment-context";
+import { errorResponse } from "@/lib/errors";
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const user = await requireSession();
+    const { id } = await params;
+    await authorize(user, "assessment.take");
+    const data = await parseBody(req, submitAssignmentSchema);
+    const submission = await submitAssignment(user, id, data, requestContext(req));
+    return NextResponse.json({ submission }, { status: 201 });
+  } catch (err) {
+    return errorResponse(err);
+  }
+}

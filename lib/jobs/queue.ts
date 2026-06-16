@@ -9,6 +9,15 @@ async function runInline(name: string, data: Record<string, unknown>) {
     const { finalizePaymentReceipt } = await import("@/lib/services/receipt");
     await finalizePaymentReceipt(data.paymentId);
   }
+  if (name === "attempt-auto-submit" && typeof data.attemptId === "string") {
+    const { autoSubmitDueAttempt, processDueAttempts } = await import("@/lib/services/attempt");
+    await autoSubmitDueAttempt(data.attemptId);
+    await processDueAttempts();
+  }
+  if (name === "ai-essay-grade" && typeof data.attemptId === "string") {
+    const { runAiEssayGrading } = await import("@/lib/services/attempt");
+    await runAiEssayGrading(data.attemptId);
+  }
 }
 
 export async function enqueueJob(name: string, data: Record<string, unknown>) {

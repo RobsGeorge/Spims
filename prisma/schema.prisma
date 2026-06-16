@@ -577,6 +577,8 @@ model Assignment {
   submissionType      SubmissionType @default(BOTH)
   allowedFileTypes    String[]
   maxPoints           Float          @default(100)
+  itemWeight          Float?
+  released            Boolean        @default(false)
   dueDate             DateTime?
   latePenaltyOverride Float?
   contentItem         ContentItem         @relation(fields: [contentItemId], references: [id], onDelete: Cascade)
@@ -698,6 +700,9 @@ model Assessment {
   oneAtATime        Boolean           @default(false)
   noBacktrack       Boolean           @default(false)
   logFocusLoss      Boolean           @default(true)
+  maxPoints         Float             @default(100)
+  itemWeight        Float?
+  released          Boolean           @default(false)
   offering    CourseOffering      @relation(fields: [offeringId], references: [id], onDelete: Cascade)
   contentItem ContentItem?        @relation(fields: [contentItemId], references: [id])
   component   GradebookComponent? @relation(fields: [componentId], references: [id])
@@ -729,11 +734,14 @@ model AssessmentAttempt {
   status         AttemptStatus @default(IN_PROGRESS)
   totalScore     Float?
   focusLossCount Int           @default(0)
+  questionIds    String[]      @default([])
+  examSnapshot   Json?
   assessment     Assessment    @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   student        User          @relation(fields: [studentId], references: [id])
   answers        AttemptAnswer[]
   @@unique([assessmentId, studentId, attemptNo])
   @@index([status])
+  @@index([status, dueAt])
 }
 
 model AttemptAnswer {

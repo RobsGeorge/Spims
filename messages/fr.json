@@ -41,7 +41,9 @@
     "billing": "Facturation",
     "finance": "Finance",
     "payments": "Paiements",
-    "adminWallet": "Attributions de points"
+    "adminWallet": "Attributions de points",
+    "teach": "Enseignement",
+    "teaching": "Enseignement"
   },
   "auth": {
     "login": "Se connecter",
@@ -403,5 +405,40 @@
     "donateSuccess": "Merci pour votre don",
     "donateFailed": "Échec du don",
     "invalidForm": "Veuillez vérifier les champs"
+  },
+  "exam": {
+    "title": "Examen",
+    "start": "Commencer",
+    "submit": "Soumettre",
+    "submitting": "Soumission…",
+    "startFailed": "Impossible de démarrer",
+    "submitFailed": "Impossible de soumettre",
+    "timeRemaining": "{min}:{sec} restantes",
+    "timeExpired": "Temps écoulé",
+    "integrityNotice": "Perte de focus enregistrée. Restez en plein écran.",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "availableAssessments": "Évaluations",
+    "noAssessments": "Aucune évaluation"
+  },
+  "gradebook": {
+    "title": "Carnet de notes",
+    "studentTitle": "Mes notes",
+    "teachTitle": "Mes offres",
+    "openGradebook": "Ouvrir le carnet",
+    "student": "Étudiant",
+    "overall": "Global",
+    "status": "Statut",
+    "noGrade": "Pas encore de note",
+    "noEnrollments": "Aucun cours inscrit",
+    "viewCourse": "Voir le cours",
+    "submitLock": "Soumettre et verrouiller",
+    "lockSuccess": "{count} inscription(s) verrouillée(s)",
+    "lockFailed": "Échec du verrouillage",
+    "reopenTitle": "Rouvrir les notes",
+    "reopenReason": "Motif de réouverture",
+    "reopen": "Rouvrir",
+    "reopenSuccess": "{count} inscription(s) rouverte(s)",
+    "reopenFailed": "Échec de la réouverture"
   }
 }

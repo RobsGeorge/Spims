@@ -41,7 +41,9 @@
     "billing": "الفواتير",
     "finance": "المالية",
     "payments": "المدفوعات",
-    "adminWallet": "منح النقاط"
+    "adminWallet": "منح النقاط",
+    "teach": "التدريس",
+    "teaching": "التدريس"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -403,5 +405,40 @@
     "donateSuccess": "شكرًا على تبرعك",
     "donateFailed": "فشل التبرع",
     "invalidForm": "يرجى التحقق من الحقول"
+  },
+  "exam": {
+    "title": "الامتحان",
+    "start": "ابدأ",
+    "submit": "إرسال",
+    "submitting": "جارٍ الإرسال…",
+    "startFailed": "تعذر بدء الامتحان",
+    "submitFailed": "تعذر إرسال الامتحان",
+    "timeRemaining": "متبقٍ {min}:{sec}",
+    "timeExpired": "انتهى الوقت",
+    "integrityNotice": "يُسجَّل فقدان التركيز. ابق في وضع ملء الشاشة.",
+    "previous": "السابق",
+    "next": "التالي",
+    "availableAssessments": "التقييمات",
+    "noAssessments": "لا توجد تقييمات"
+  },
+  "gradebook": {
+    "title": "سجل الدرجات",
+    "studentTitle": "درجاتي",
+    "teachTitle": "مقرراتي",
+    "openGradebook": "فتح سجل الدرجات",
+    "student": "الطالب",
+    "overall": "الإجمالي",
+    "status": "الحالة",
+    "noGrade": "لا درجة بعد",
+    "noEnrollments": "لا مقررات مسجَّلة",
+    "viewCourse": "عرض المقرر",
+    "submitLock": "إرسال وقفل الدرجات",
+    "lockSuccess": "تم قفل {count} تسجيل",
+    "lockFailed": "تعذر قفل الدرجات",
+    "reopenTitle": "إعادة فتح الدرجات",
+    "reopenReason": "سبب إعادة الفتح",
+    "reopen": "إعادة فتح",
+    "reopenSuccess": "تمت إعادة فتح {count} تسجيل",
+    "reopenFailed": "تعذر إعادة الفتح"
   }
 }
