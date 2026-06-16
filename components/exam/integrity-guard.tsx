@@ -45,9 +45,7 @@ export function IntegrityGuard({
     };
   }, [enforceFullScreen]);
 
-  if (!logFocusLoss) return null;
-
-  return (
+  return logFocusLoss ? (
     <p className="text-xs text-muted-foreground px-4">{t("integrityNotice")}</p>
-  );
+  ) : null;
 }
