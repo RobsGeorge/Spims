@@ -81,6 +81,8 @@ export async function enrollStudent(
 
   if (status === EnrollmentStatus.ENROLLED) {
     await createInvoiceForEnrollment(actor, enrollment.id, ctx);
+    const { notifyEnrollment } = await import("@/lib/services/notification");
+    await notifyEnrollment(actor.id, enrollment.offering.course.title);
   }
 
   return enrollment;
@@ -318,6 +320,15 @@ export async function promoteWaitlist(
 
   for (const id of result.ids) {
     await createInvoiceForEnrollment(actor, id, ctx);
+  }
+
+  const { notifyWaitlistPromotion } = await import("@/lib/services/notification");
+  const offeringWithCourse = await db.courseOffering.findUnique({
+    where: { id: offeringId },
+    include: { course: true },
+  });
+  for (const w of waitlisted) {
+    await notifyWaitlistPromotion(w.studentId, offeringWithCourse?.course.title ?? "course");
   }
 
   return result;

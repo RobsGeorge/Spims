@@ -67,3 +67,28 @@ export async function sendApplicationDecisionEmail(
     html: `<p>${body.replace(/\n/g, "<br>")}</p>`,
   });
 }
+
+export async function sendNotificationEmail(to: string, subject: string, body: string): Promise<void> {
+  const t = getTransporter();
+  if (!t) {
+    console.warn(`[email] No EMAIL_HOST — notification for ${to}: ${subject}`);
+    return;
+  }
+  await t.sendMail({
+    from: FROM(),
+    to,
+    subject,
+    text: body,
+    html: `<p>${body.replace(/\n/g, "<br>")}</p>`,
+  });
+}
+
+export async function sendSessionReminderEmail(
+  to: string,
+  sessionTitle: string,
+  whenLabel: string,
+): Promise<void> {
+  const subject = `Reminder: ${sessionTitle}`;
+  const body = `Your live session "${sessionTitle}" starts in ${whenLabel}.`;
+  await sendNotificationEmail(to, subject, body);
+}

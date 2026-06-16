@@ -43,7 +43,8 @@
     "payments": "المدفوعات",
     "adminWallet": "منح النقاط",
     "teach": "التدريس",
-    "teaching": "التدريس"
+    "teaching": "التدريس",
+    "scheduling": "جدولة الجلسات"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -426,6 +427,8 @@
     "studentTitle": "درجاتي",
     "teachTitle": "مقرراتي",
     "openGradebook": "فتح سجل الدرجات",
+    "openAttendance": "الحضور",
+    "openDiscussions": "النقاشات",
     "student": "الطالب",
     "overall": "الإجمالي",
     "status": "الحالة",
@@ -440,5 +443,37 @@
     "reopen": "إعادة فتح",
     "reopenSuccess": "تمت إعادة فتح {count} تسجيل",
     "reopenFailed": "تعذر إعادة الفتح"
+  },
+  "session": {
+    "schedulerTitle": "جدولة الجلسات المباشرة",
+    "scheduleSession": "جدولة جلسة",
+    "sessionTitle": "عنوان الجلسة",
+    "createSession": "إنشاء جلسة",
+    "creating": "جارٍ الإنشاء…",
+    "createError": "تعذر إنشاء الجلسة",
+    "zoomLinked": "مرتبط بزوم",
+    "noSessions": "لا جلسات مجدولة",
+    "joinSession": "انضمام",
+    "joining": "جارٍ الانضمام…",
+    "joinError": "الانضمام غير متاح"
+  },
+  "attendance": {
+    "title": "الحضور",
+    "importZoom": "استيراد من زوم",
+    "noRecords": "لا سجلات حضور بعد"
+  },
+  "discussion": {
+    "title": "النقاشات",
+    "threads": "المواضيع",
+    "posts": "المشاركات",
+    "loadBoard": "تحميل لوحة النقاش",
+    "newThread": "عنوان موضوع جديد",
+    "create": "إنشاء",
+    "writePost": "اكتب مشاركة…",
+    "post": "نشر"
+  },
+  "notification": {
+    "title": "الإشعارات",
+    "empty": "لا إشعارات"
   }
 }

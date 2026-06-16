@@ -616,17 +616,19 @@ model SessionRecurrence {
 }
 
 model LiveSession {
-  id              String           @id @default(cuid())
-  offeringId      String
-  title           String
-  scheduledStart  DateTime
-  durationMinutes Int
-  zoomMeetingId   String?
-  zoomJoinUrl     String?
-  zoomStartUrl    String?
-  recordingUrl    String?
-  offering        CourseOffering   @relation(fields: [offeringId], references: [id], onDelete: Cascade)
-  attendance      AttendanceRecord[]
+  id                 String           @id @default(cuid())
+  offeringId         String
+  title              String
+  scheduledStart     DateTime
+  durationMinutes    Int
+  zoomMeetingId      String?
+  zoomJoinUrl        String?
+  zoomStartUrl       String?
+  recordingUrl       String?
+  reminder24hSentAt  DateTime?
+  reminder15mSentAt  DateTime?
+  offering           CourseOffering   @relation(fields: [offeringId], references: [id], onDelete: Cascade)
+  attendance         AttendanceRecord[]
   @@index([offeringId, scheduledStart])
 }
 

@@ -43,7 +43,8 @@
     "payments": "Paiements",
     "adminWallet": "Attributions de points",
     "teach": "Enseignement",
-    "teaching": "Enseignement"
+    "teaching": "Enseignement",
+    "scheduling": "Planification"
   },
   "auth": {
     "login": "Se connecter",
@@ -426,6 +427,8 @@
     "studentTitle": "Mes notes",
     "teachTitle": "Mes offres",
     "openGradebook": "Ouvrir le carnet",
+    "openAttendance": "Présences",
+    "openDiscussions": "Discussions",
     "student": "Étudiant",
     "overall": "Global",
     "status": "Statut",
@@ -440,5 +443,37 @@
     "reopen": "Rouvrir",
     "reopenSuccess": "{count} inscription(s) rouverte(s)",
     "reopenFailed": "Échec de la réouverture"
+  },
+  "session": {
+    "schedulerTitle": "Planification des sessions live",
+    "scheduleSession": "Planifier une session",
+    "sessionTitle": "Titre de la session",
+    "createSession": "Créer la session",
+    "creating": "Création…",
+    "createError": "Impossible de créer la session",
+    "zoomLinked": "Zoom lié",
+    "noSessions": "Aucune session planifiée",
+    "joinSession": "Rejoindre",
+    "joining": "Connexion…",
+    "joinError": "Connexion indisponible"
+  },
+  "attendance": {
+    "title": "Présences",
+    "importZoom": "Importer depuis Zoom",
+    "noRecords": "Aucun enregistrement"
+  },
+  "discussion": {
+    "title": "Discussions",
+    "threads": "Fil de discussion",
+    "posts": "Messages",
+    "loadBoard": "Charger le forum",
+    "newThread": "Nouveau sujet",
+    "create": "Créer",
+    "writePost": "Écrire un message…",
+    "post": "Publier"
+  },
+  "notification": {
+    "title": "Notifications",
+    "empty": "Aucune notification"
   }
 }

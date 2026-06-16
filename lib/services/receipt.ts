@@ -89,6 +89,11 @@ export async function finalizePaymentReceipt(paymentId: string) {
   return db.payment.update({
     where: { id: paymentId },
     data: { receiptSerial: serial, receiptUrl },
+  }).then(async (updated) => {
+    const { notifyPaymentReceipt } = await import("@/lib/services/notification");
+    const major = (payment.amountMinor / 100).toFixed(2);
+    await notifyPaymentReceipt(payment.studentId, `${major} ${payment.currency}`);
+    return updated;
   });
 }
 

@@ -4,6 +4,8 @@ import type { SessionUser } from "@/lib/auth/session";
 import { withAudit } from "@/lib/audit";
 import { AppError } from "@/lib/errors";
 import { scoreFromAttempts } from "@/lib/services/assessment";
+import { computeAttendancePercent } from "@/lib/services/attendance";
+import { computeDiscussionPercent } from "@/lib/services/discussion";
 import type { UpdateGradebookComponentsInput } from "@/lib/validation/assessment";
 
 function assertWeightsSumTo100(components: Array<{ weightPercent: number }>) {
@@ -142,6 +144,7 @@ export async function computeComponentPercent(
   component: {
     id: string;
     kind: ComponentKind;
+    offeringId?: string;
     assignments: Array<{ id: string; maxPoints: number; itemWeight: number | null; released: boolean }>;
     assessments: Array<{
       id: string;
@@ -153,9 +156,17 @@ export async function computeComponentPercent(
   },
   studentId: string,
   releasedOnly: boolean,
+  offeringId?: string,
 ): Promise<number | null> {
-  if (component.kind === ComponentKind.ATTENDANCE || component.kind === ComponentKind.DISCUSSION) {
-    return null;
+  if (component.kind === ComponentKind.ATTENDANCE) {
+    const oid = offeringId ?? component.offeringId;
+    if (!oid) return null;
+    return computeAttendancePercent(oid, studentId);
+  }
+  if (component.kind === ComponentKind.DISCUSSION) {
+    const oid = offeringId ?? component.offeringId;
+    if (!oid) return null;
+    return computeDiscussionPercent(oid, studentId);
   }
 
   const itemPercents: Array<{ percent: number; weight: number }> = [];
@@ -183,7 +194,7 @@ export async function computeEnrollmentPercent(
   let weightTotal = 0;
 
   for (const c of components) {
-    const pct = await computeComponentPercent(c, studentId, releasedOnly);
+    const pct = await computeComponentPercent({ ...c, offeringId }, studentId, releasedOnly, offeringId);
     results.push({ id: c.id, name: c.name, percent: pct, weightPercent: c.weightPercent });
     if (pct != null) {
       weightedSum += pct * (c.weightPercent / 100);

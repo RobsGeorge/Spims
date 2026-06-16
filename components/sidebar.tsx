@@ -96,6 +96,12 @@ const ADMIN_ITEMS: NavItem[] = [
     icon: Calendar,
     roles: [RoleType.SUPER_ADMIN, RoleType.ADMINISTRATIVE_ADMIN],
   },
+  {
+    labelKey: "nav.scheduling",
+    href: "/admin/scheduling",
+    icon: Calendar,
+    roles: [RoleType.SUPER_ADMIN, RoleType.ADMINISTRATIVE_ADMIN],
+  },
 ];
 
 const ACADEMIC_ITEMS: NavItem[] = [

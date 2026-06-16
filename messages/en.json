@@ -43,7 +43,8 @@
     "payments": "Payments",
     "adminWallet": "Wallet grants",
     "teach": "Teaching",
-    "teaching": "Teaching"
+    "teaching": "Teaching",
+    "scheduling": "Scheduling"
   },
   "auth": {
     "login": "Log in",
@@ -426,6 +427,8 @@
     "studentTitle": "My grades",
     "teachTitle": "My offerings",
     "openGradebook": "Open gradebook",
+    "openAttendance": "Attendance",
+    "openDiscussions": "Discussions",
     "student": "Student",
     "overall": "Overall",
     "status": "Status",
@@ -440,5 +443,37 @@
     "reopen": "Reopen",
     "reopenSuccess": "Reopened {count} enrollment(s)",
     "reopenFailed": "Could not reopen grades"
+  },
+  "session": {
+    "schedulerTitle": "Live session scheduling",
+    "scheduleSession": "Schedule a session",
+    "sessionTitle": "Session title",
+    "createSession": "Create session",
+    "creating": "Creating…",
+    "createError": "Could not create session",
+    "zoomLinked": "Zoom linked",
+    "noSessions": "No sessions scheduled",
+    "joinSession": "Join session",
+    "joining": "Joining…",
+    "joinError": "Join not available"
+  },
+  "attendance": {
+    "title": "Attendance",
+    "importZoom": "Import from Zoom",
+    "noRecords": "No attendance records yet"
+  },
+  "discussion": {
+    "title": "Discussions",
+    "threads": "Threads",
+    "posts": "Posts",
+    "loadBoard": "Load discussion board",
+    "newThread": "New thread title",
+    "create": "Create",
+    "writePost": "Write a post…",
+    "post": "Post"
+  },
+  "notification": {
+    "title": "Notifications",
+    "empty": "No notifications"
   }
 }

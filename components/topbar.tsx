@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NotificationsBell } from "@/components/notifications/notifications-bell";
 import type { SessionUser } from "@/lib/auth/session";
 
 export function Topbar({ user, locale }: { user: SessionUser; locale: string }) {
@@ -32,6 +33,7 @@ export function Topbar({ user, locale }: { user: SessionUser; locale: string }) 
       <div className="flex-1" />
       <LocaleSwitcher />
       <ThemeToggle />
+      <NotificationsBell />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="rounded-full">

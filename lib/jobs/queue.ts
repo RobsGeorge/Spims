@@ -18,6 +18,19 @@ async function runInline(name: string, data: Record<string, unknown>) {
     const { runAiEssayGrading } = await import("@/lib/services/attempt");
     await runAiEssayGrading(data.attemptId);
   }
+  if (name === "notification-dispatch" && typeof data.notificationId === "string") {
+    const { dispatchNotificationEmail } = await import("@/lib/services/notification");
+    await dispatchNotificationEmail(data.notificationId);
+  }
+  if (name === "session-reminders") {
+    const { processSessionReminders } = await import("@/lib/jobs/session-reminders");
+    await processSessionReminders();
+  }
+  if (name === "zoom-attendance-import" && typeof data.sessionId === "string") {
+    const { importSessionAttendance } = await import("@/lib/services/attendance");
+    const participants = Array.isArray(data.participants) ? data.participants as Array<{ email: string; durationMinutes: number }> : [];
+    await importSessionAttendance(data.sessionId, participants);
+  }
 }
 
 export async function enqueueJob(name: string, data: Record<string, unknown>) {
@@ -38,7 +51,7 @@ export async function enqueueJob(name: string, data: Record<string, unknown>) {
     await Promise.race([
       queue.add(name, data).then(() => queue.close()),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Redis queue timeout")), 3_000),
+        setTimeout(() => reject(new Error("Redis queue timeout")), 500),
       ),
     ]);
   } catch {

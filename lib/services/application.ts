@@ -246,6 +246,9 @@ export async function decideApplication(
     input.decisionNote,
   );
 
+  const { notifyApplicationDecision } = await import("@/lib/services/notification");
+  await notifyApplicationDecision(app.applicantId, app.program.name, input.decision);
+
   return result;
 }
 

@@ -24,9 +24,15 @@ export default async function TeachPage() {
                 {o.course.code} — {o.course.title}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-wrap gap-2">
               <Button asChild variant="outline" size="sm">
                 <Link href={`/teach/${o.id}/gradebook`}>{t("openGradebook")}</Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/teach/${o.id}/attendance`}>{t("openAttendance")}</Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/teach/${o.id}/discussions`}>{t("openDiscussions")}</Link>
               </Button>
             </CardContent>
           </Card>

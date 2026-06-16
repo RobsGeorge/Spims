@@ -65,7 +65,7 @@ export async function lockOfferingGrades(
     include: { studentProgram: true },
   });
 
-  return withAudit(
+  const result = await withAudit(
     { actor, action: "grade.lock", entityType: "CourseOffering", entityId: offeringId, ...ctx },
     async (tx) => {
       const locked = [];
@@ -211,6 +211,19 @@ export async function lockOfferingGrades(
       return { locked: locked.length, enrollmentIds: locked };
     },
   );
+
+  const offeringTitle = offering.course.title;
+  const { notifyGradeRelease } = await import("@/lib/services/notification");
+  for (const enrollment of enrollments) {
+    if (result.enrollmentIds.includes(enrollment.id)) {
+      const letter =
+        (await db.enrollment.findUnique({ where: { id: enrollment.id }, select: { finalLetter: true } }))
+          ?.finalLetter ?? "—";
+      await notifyGradeRelease(enrollment.studentId, offeringTitle, letter);
+    }
+  }
+
+  return result;
 }
 
 export async function reopenOfferingGrades(
