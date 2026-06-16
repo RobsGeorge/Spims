@@ -51,7 +51,7 @@ export async function enqueueJob(name: string, data: Record<string, unknown>) {
     await Promise.race([
       queue.add(name, data).then(() => queue.close()),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Redis queue timeout")), 500),
+        setTimeout(() => reject(new Error("Redis queue timeout")), 3_000),
       ),
     ]);
   } catch {

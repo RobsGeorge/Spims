@@ -34,6 +34,17 @@ describe("session helpers", () => {
     expect(isJoinWindowOpen(base, openAt)).toBe(true);
     expect(isJoinWindowOpen(base, new Date(openAt.getTime() - 1000))).toBe(false);
   });
+
+  it("iterates recurrence date range without coercing Date to number", () => {
+    const startDate = new Date("2026-06-01T00:00:00Z");
+    const endDate = new Date("2026-06-05T00:00:00Z");
+    const days: number[] = [];
+    for (let d = new Date(startDate); d <= endDate; ) {
+      days.push(d.getUTCDate());
+      d.setUTCDate(d.getUTCDate() + 1);
+    }
+    expect(days).toEqual([1, 2, 3, 4, 5]);
+  });
 });
 
 describe("attendanceStatusForMinutes", () => {

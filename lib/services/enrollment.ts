@@ -82,7 +82,7 @@ export async function enrollStudent(
   if (status === EnrollmentStatus.ENROLLED) {
     await createInvoiceForEnrollment(actor, enrollment.id, ctx);
     const { notifyEnrollment } = await import("@/lib/services/notification");
-    await notifyEnrollment(actor.id, enrollment.offering.course.title);
+    await notifyEnrollment(enrollment.studentId, enrollment.offering.course.title);
   }
 
   return enrollment;
@@ -327,8 +327,13 @@ export async function promoteWaitlist(
     where: { id: offeringId },
     include: { course: true },
   });
-  for (const w of waitlisted) {
-    await notifyWaitlistPromotion(w.studentId, offeringWithCourse?.course.title ?? "course");
+  const courseTitle = offeringWithCourse?.course.title ?? "course";
+  const promoted = await db.enrollment.findMany({
+    where: { id: { in: result.ids }, status: EnrollmentStatus.ENROLLED },
+    select: { studentId: true },
+  });
+  for (const e of promoted) {
+    await notifyWaitlistPromotion(e.studentId, courseTitle);
   }
 
   return result;

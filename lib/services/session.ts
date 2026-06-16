@@ -150,8 +150,11 @@ export async function createRecurrenceAndSessions(
         },
       });
 
-      for (let d = new Date(startDate); d <= endDate; d.setUTCDate(d.getUTCDate() + 1)) {
-        if (!daySet.has(d.getUTCDay())) continue;
+      for (let d = new Date(startDate); d <= endDate; ) {
+        if (!daySet.has(d.getUTCDay())) {
+          d.setUTCDate(d.getUTCDate() + 1);
+          continue;
+        }
         const scheduledStart = parseTimeOnDate(d, data.startTime);
         await assertHostCapacity(scheduledStart, data.durationMinutes);
         const meeting = await createZoomMeeting({
@@ -172,6 +175,7 @@ export async function createRecurrenceAndSessions(
             },
           }),
         );
+        d.setUTCDate(d.getUTCDate() + 1);
       }
     },
   );
