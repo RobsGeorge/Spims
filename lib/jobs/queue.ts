@@ -1,41 +1,12 @@
-import { db } from "@/lib/db";
+import { processJob } from "@/lib/jobs/process-job";
 
 export function isQueueAvailable(): boolean {
   return Boolean(process.env["REDIS_URL"]);
 }
 
-async function runInline(name: string, data: Record<string, unknown>) {
-  if (name === "receipt-pdf" && typeof data.paymentId === "string") {
-    const { finalizePaymentReceipt } = await import("@/lib/services/receipt");
-    await finalizePaymentReceipt(data.paymentId);
-  }
-  if (name === "attempt-auto-submit" && typeof data.attemptId === "string") {
-    const { autoSubmitDueAttempt, processDueAttempts } = await import("@/lib/services/attempt");
-    await autoSubmitDueAttempt(data.attemptId);
-    await processDueAttempts();
-  }
-  if (name === "ai-essay-grade" && typeof data.attemptId === "string") {
-    const { runAiEssayGrading } = await import("@/lib/services/attempt");
-    await runAiEssayGrading(data.attemptId);
-  }
-  if (name === "notification-dispatch" && typeof data.notificationId === "string") {
-    const { dispatchNotificationEmail } = await import("@/lib/services/notification");
-    await dispatchNotificationEmail(data.notificationId);
-  }
-  if (name === "session-reminders") {
-    const { processSessionReminders } = await import("@/lib/jobs/session-reminders");
-    await processSessionReminders();
-  }
-  if (name === "zoom-attendance-import" && typeof data.sessionId === "string") {
-    const { importSessionAttendance } = await import("@/lib/services/attendance");
-    const participants = Array.isArray(data.participants) ? data.participants as Array<{ email: string; durationMinutes: number }> : [];
-    await importSessionAttendance(data.sessionId, participants);
-  }
-}
-
 export async function enqueueJob(name: string, data: Record<string, unknown>) {
   if (!isQueueAvailable()) {
-    await runInline(name, data);
+    await processJob(name, data);
     return;
   }
 
@@ -55,6 +26,6 @@ export async function enqueueJob(name: string, data: Record<string, unknown>) {
       ),
     ]);
   } catch {
-    await runInline(name, data);
+    await processJob(name, data);
   }
 }

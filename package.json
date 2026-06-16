@@ -14,7 +14,10 @@
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "worker": "tsx lib/jobs/worker.ts",
+    "acceptance:phase9": "tsx scripts/acceptance-phase9.ts",
+    "verify:backup": "tsx scripts/verify-backup-restore.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1068.0",
@@ -71,5 +74,8 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

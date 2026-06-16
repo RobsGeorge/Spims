@@ -36,6 +36,15 @@ Next.js (App Router) + TypeScript · PostgreSQL + Prisma · Tailwind + shadcn/ui
 ## 🚀 Start here
 See **`docs/getting-started.md`** → run **`docs/phase-0-scaffold.md`**, then feed the agent the build brief one phase at a time.
 
+## 🚢 Deployment (Phase 9)
+- **Runbooks:** `docs/runbooks/hetzner-deploy.md` (VPS + Nginx + TLS + Compose) · `docs/runbooks/release.md`
+- **Production stack:** `docker-compose.prod.yml` (Postgres, Redis, app, worker, migrate/seed)
+- **Seed:** `npm run db:seed` — Super Admin, default grading scheme, active theme, sample program/course/offering
+- **Health:** `GET /api/health` (DB + Redis checks)
+- **Worker:** `npm run worker` (BullMQ)
+- **Backups:** `scripts/backup-db.sh` / `scripts/restore-db.sh` · verify with `npm run verify:backup`
+- **Acceptance:** `npm run acceptance:phase9`
+
 ## 📁 Planned project structure
 ```
 app/[locale]/        routes: (public) (auth) (app)
