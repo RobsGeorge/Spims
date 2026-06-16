@@ -21,7 +21,7 @@ type AttendanceRow = {
 };
 
 export function AttendancePanel({
-  offeringId,
+  offeringId: _offeringId,
   sessions: initialSessions,
 }: {
   offeringId: string;

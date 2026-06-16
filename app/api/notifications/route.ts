@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
-import { listNotifications, markNotificationRead } from "@/lib/services/notification";
+import { listNotifications } from "@/lib/services/notification";
 import { errorResponse } from "@/lib/errors";
 
 export async function GET(req: NextRequest) {

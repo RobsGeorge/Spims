@@ -156,15 +156,14 @@ export async function updateContentItem(
     data.fileUrl !== undefined ||
     data.body !== undefined
   ) {
-    const merged: CreateContentItemInput = {
-      type,
+    validateContentItemPayload(type, {
+      type: type as CreateContentItemInput["type"],
       title: data.title ?? existing.title,
       order: data.order ?? existing.order,
       vimeoId: data.vimeoId !== undefined ? data.vimeoId : existing.vimeoId ?? undefined,
       fileUrl: data.fileUrl !== undefined ? data.fileUrl : existing.fileUrl ?? undefined,
       body: data.body !== undefined ? data.body : existing.body ?? undefined,
-    };
-    validateContentItemPayload(type, merged);
+    });
   }
 
   return withAudit(

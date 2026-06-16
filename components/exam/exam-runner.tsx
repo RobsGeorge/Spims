@@ -88,7 +88,7 @@ export function ExamRunner({
     setAttempt(fullData.attempt);
   }
 
-  async function submitExam() {
+  const submitExam = useCallback(async () => {
     if (!attempt) return;
     setSubmitting(true);
     setError(null);
@@ -100,7 +100,7 @@ export function ExamRunner({
       return;
     }
     window.location.href = "/grades";
-  }
+  }, [attempt, t]);
 
   useEffect(() => {
     if (!attempt) return;
@@ -110,7 +110,7 @@ export function ExamRunner({
       }
     }, 5000);
     return () => clearInterval(check);
-  }, [attempt]);
+  }, [attempt, submitExam]);
 
   if (!attempt) {
     return (

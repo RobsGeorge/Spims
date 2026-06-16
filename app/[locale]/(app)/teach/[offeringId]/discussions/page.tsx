@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { requireSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { getDiscussionBoard } from "@/lib/services/discussion";
@@ -9,7 +9,7 @@ export default async function TeachDiscussionsPage({
 }: {
   params: Promise<{ offeringId: string }>;
 }) {
-  const t = useTranslations("discussion");
+  const t = await getTranslations("discussion");
   const session = await requireSession();
   await authorize(session, "discussion.post");
   const { offeringId } = await params;

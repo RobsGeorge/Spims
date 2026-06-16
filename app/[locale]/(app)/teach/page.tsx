@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { requireSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default async function TeachPage() {
-  const t = useTranslations("gradebook");
+  const t = await getTranslations("gradebook");
   const session = await requireSession();
   await authorize(session, "gradebook.enterGrades");
 

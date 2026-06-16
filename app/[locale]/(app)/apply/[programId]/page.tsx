@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { requireSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { db } from "@/lib/db";
@@ -11,7 +11,7 @@ export default async function ApplyPage({
 }: {
   params: Promise<{ programId: string }>;
 }) {
-  const t = useTranslations();
+  const t = await getTranslations();
   const session = await requireSession();
   await authorize(session, "application.submit");
   const { programId } = await params;

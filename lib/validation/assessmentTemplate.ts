@@ -9,7 +9,7 @@ export const componentSchema = z.object({
 
 export const createTemplateSchema = z.object({
   name: z.string().min(1).max(120),
-  isDefault: z.boolean().optional().default(false),
+  isDefault: z.boolean().default(false),
   components: z.array(componentSchema).min(1),
 });
 
@@ -19,5 +19,5 @@ export const updateTemplateSchema = z.object({
   components: z.array(componentSchema).min(1).optional(),
 });
 
-export type CreateTemplateInput = z.infer<typeof createTemplateSchema>;
-export type UpdateTemplateInput = z.infer<typeof updateTemplateSchema>;
+export type CreateTemplateInput = z.output<typeof createTemplateSchema>;
+export type UpdateTemplateInput = z.output<typeof updateTemplateSchema>;

@@ -1,15 +1,15 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 
-export default function LandingPage({
+export default async function LandingPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   void params; // locale is set by the [locale] segment
-  const t = useTranslations();
+  const t = await getTranslations();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-8">

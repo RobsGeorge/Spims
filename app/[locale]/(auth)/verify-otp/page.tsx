@@ -1,15 +1,15 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { OtpForm } from "@/components/auth/otp-form";
 
-export default function VerifyOtpPage({
+export default async function VerifyOtpPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ userId?: string; purpose?: string }>;
 }) {
-  const t = useTranslations();
+  const t = await getTranslations();
 
   return (
     <Card className="w-full max-w-md">

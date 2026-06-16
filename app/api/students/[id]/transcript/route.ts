@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { getStudentTranscript } from "@/lib/services/grading";
-import { errorResponse, AppError } from "@/lib/errors";
+import { errorResponse } from "@/lib/errors";
 
 export async function GET(
   _req: NextRequest,

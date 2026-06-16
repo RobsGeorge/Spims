@@ -5,7 +5,7 @@ import { getAssessmentById, assertStudentEnrolled } from "@/lib/services/assessm
 import { startAttempt } from "@/lib/services/attempt";
 import { db } from "@/lib/db";
 import { requestContext } from "@/lib/api/assessment-context";
-import { errorResponse, AppError } from "@/lib/errors";
+import { errorResponse } from "@/lib/errors";
 
 export async function POST(
   req: NextRequest,

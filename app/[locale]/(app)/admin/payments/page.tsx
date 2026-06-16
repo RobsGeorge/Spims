@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { PaymentStatus } from "@prisma/client";
 import { requireSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { ManualPaymentForm, PendingPayments } from "@/components/finance/manual-payment-form";
 
 export default async function AdminPaymentsPage() {
-  const t = useTranslations("finance");
+  const t = await getTranslations("finance");
   const session = await requireSession();
   await authorize(session, "payment.manual");
 

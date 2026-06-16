@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import type { PrismaClient } from "@prisma/client";
 import { db } from "@/lib/db";
 import type { SessionUser } from "@/lib/auth/session";
 import { withAudit } from "@/lib/audit";
@@ -7,8 +8,9 @@ import { buildWeekUnlockMap } from "@/lib/services/offeringAccess";
 import { studentHasPassedCourse } from "@/lib/services/offering";
 
 type WeekProgressRow = { id: string; studentId: string; weekId: string; completedAt: Date };
+type TxClient = Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0];
 
-function weekProgressClient(tx: typeof db = db) {
+function weekProgressClient(tx: TxClient | typeof db = db) {
   const delegate = (tx as typeof db & { weekProgress?: { findMany?: (...args: unknown[]) => unknown } })
     .weekProgress;
   if (delegate && typeof delegate.findMany === "function") {

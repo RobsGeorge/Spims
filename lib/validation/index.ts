@@ -1,8 +1,8 @@
-import { z, ZodSchema } from "zod";
+import { z, type ZodTypeAny } from "zod";
 import { AppError } from "@/lib/errors";
 
 /** Parse and validate a JSON request body against a Zod schema. */
-export async function parseBody<T>(req: Request, schema: ZodSchema<T>): Promise<T> {
+export async function parseBody<S extends ZodTypeAny>(req: Request, schema: S): Promise<z.output<S>> {
   let raw: unknown;
   try {
     raw = await req.json();
@@ -17,10 +17,10 @@ export async function parseBody<T>(req: Request, schema: ZodSchema<T>): Promise<
 }
 
 /** Parse and validate URL search params against a Zod schema. */
-export function parseQuery<T>(
+export function parseQuery<S extends ZodTypeAny>(
   searchParams: URLSearchParams,
-  schema: ZodSchema<T>,
-): T {
+  schema: S,
+): z.output<S> {
   const raw = Object.fromEntries(searchParams.entries());
   const result = schema.safeParse(raw);
   if (!result.success) {

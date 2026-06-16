@@ -1,10 +1,10 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { requireSession } from "@/lib/auth/session";
 import { listCourses, getStudentInterestCourseIds } from "@/lib/services/course";
 import { CourseCatalog } from "@/components/courses/course-catalog";
 
 export default async function CoursesPage() {
-  const t = useTranslations();
+  const t = await getTranslations();
   const session = await requireSession();
 
   const [{ items: courses }, flaggedCourseIds] = await Promise.all([

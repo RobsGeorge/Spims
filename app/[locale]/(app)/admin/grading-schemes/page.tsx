@@ -1,11 +1,11 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { requireSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { listGradingSchemes } from "@/lib/services/gradingScheme";
 import { GradingSchemeEditor } from "@/components/admin/grading-scheme-editor";
 
 export default async function GradingSchemesPage() {
-  const t = useTranslations();
+  const t = await getTranslations();
   const session = await requireSession();
   await authorize(session, "gradingScheme.manage");
 

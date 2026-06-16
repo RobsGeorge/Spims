@@ -1,9 +1,9 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResetRequestForm } from "@/components/auth/reset-form";
 
-export default function ResetPage() {
-  const t = useTranslations();
+export default async function ResetPage() {
+  const t = await getTranslations();
 
   return (
     <Card className="w-full max-w-md">

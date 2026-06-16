@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { requireSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
@@ -12,7 +12,7 @@ export default async function OfferingCoursePage({
 }: {
   params: Promise<{ offeringId: string }>;
 }) {
-  const t = useTranslations("exam");
+  const t = await getTranslations("exam");
   const session = await requireSession();
   await authorize(session, "offering.viewContent");
   const { offeringId } = await params;

@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { requireSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { listPrograms } from "@/lib/services/program";
@@ -7,7 +7,7 @@ import { listCourses } from "@/lib/services/course";
 import { ProgramsTable } from "@/components/admin/programs-table";
 
 export default async function ProgramsPage() {
-  const t = useTranslations();
+  const t = await getTranslations();
   const session = await requireSession();
   await authorize(session, "program.manage");
 

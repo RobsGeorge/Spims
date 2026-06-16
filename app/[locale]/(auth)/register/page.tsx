@@ -1,10 +1,10 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RegisterForm } from "@/components/auth/register-form";
 
-export default function RegisterPage({ params }: { params: Promise<{ locale: string }> }) {
-  const t = useTranslations();
+export default async function RegisterPage({ params }: { params: Promise<{ locale: string }> }) {
+  const t = await getTranslations();
 
   return (
     <Card className="w-full max-w-md">

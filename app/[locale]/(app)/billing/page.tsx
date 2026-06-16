@@ -1,11 +1,11 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { requireSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { listInvoices, getAmountDue } from "@/lib/services/invoice";
 import { InvoiceCheckout } from "@/components/finance/invoice-checkout";
 
 export default async function BillingPage() {
-  const t = useTranslations("finance");
+  const t = await getTranslations("finance");
   const session = await requireSession();
   await authorize(session, "invoice.viewOwn");
 

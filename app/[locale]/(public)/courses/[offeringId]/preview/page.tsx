@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { getOfferingPreview } from "@/lib/services/offering";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,7 @@ export default async function CoursePreviewPage({
 }: {
   params: Promise<{ locale: string; offeringId: string }>;
 }) {
-  const t = useTranslations();
+  const t = await getTranslations();
   const { locale, offeringId } = await params;
   const preview = await getOfferingPreview(offeringId);
 

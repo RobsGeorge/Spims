@@ -7,7 +7,6 @@ import { SkipLink } from "@/components/shell/skip-link";
 import { PageTransition } from "@/components/motion/page-transition";
 import {
   BottomNav,
-  MobileMenuButton,
   MobileNavDrawer,
   useMobileNav,
 } from "@/components/shell/mobile-nav";

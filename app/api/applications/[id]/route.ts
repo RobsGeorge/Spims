@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { RoleType } from "@prisma/client";
 import { requireSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { parseBody } from "@/lib/validation";

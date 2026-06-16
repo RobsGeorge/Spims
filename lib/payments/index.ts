@@ -1,5 +1,5 @@
 import type { PaymentMethod } from "@prisma/client";
-import { resolveRegionalCurrency, type Currency } from "@/lib/money";
+import type { Currency } from "@/lib/money";
 
 export type GatewayProvider = "paypal" | "paymob" | "cashier" | "mock";
 
@@ -13,7 +13,7 @@ export function regionalGateway(countryCode: string | null | undefined): Gateway
   return "mock";
 }
 
-export function gatewayForMethod(method: PaymentMethod, currency: Currency): GatewayProvider {
+export function gatewayForMethod(method: PaymentMethod, _currency: Currency): GatewayProvider {
   if (method === "PAYPAL") return process.env["PAYPAL_CLIENT_ID"] ? "paypal" : "mock";
   if (method === "PAYMOB") return process.env["PAYMOB_API_KEY"] ? "paymob" : "mock";
   if (method === "CASHIER") return process.env["CASHIER_API_KEY"] ? "cashier" : "mock";

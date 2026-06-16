@@ -1,11 +1,11 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { requireSession } from "@/lib/auth/session";
 import { authorize } from "@/lib/auth/authorize";
 import { listAcademicYears } from "@/lib/services/academicYear";
 import { SemestersPanel } from "@/components/admin/semesters-panel";
 
 export default async function AdminSemestersPage() {
-  const t = useTranslations();
+  const t = await getTranslations();
   const session = await requireSession();
   await authorize(session, "semester.manage");
 

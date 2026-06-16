@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import type { SessionUser } from "@/lib/auth/session";
 import { withAudit } from "@/lib/audit";
-import { AppError } from "@/lib/errors";
 import type { SettingKey } from "@/lib/validation/settings";
 import { validateSettingValue } from "@/lib/validation/settings";
 

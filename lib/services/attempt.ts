@@ -1,5 +1,4 @@
 import { AttemptStatus } from "@prisma/client";
-import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import type { SessionUser } from "@/lib/auth/session";
 import { withAudit } from "@/lib/audit";
@@ -209,7 +208,7 @@ async function finalizeAttempt(
 export async function submitAttempt(
   actor: SessionUser,
   attemptId: string,
-  ctx?: { ip?: string; userAgent?: string; requestId?: string },
+  _ctx?: { ip?: string; userAgent?: string; requestId?: string },
 ) {
   await getAttemptForStudent(attemptId, actor.id);
   return finalizeAttempt(attemptId, AttemptStatus.SUBMITTED, actor);
