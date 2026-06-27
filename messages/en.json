@@ -1,6 +1,7 @@
 {
   "common": {
     "appName": "Spims",
+    "appTagline": "Coptic Orthodox School",
     "loading": "Loading…",
     "error": "An error occurred",
     "save": "Save",
@@ -16,6 +17,32 @@
     "active": "Active",
     "suspended": "Suspended",
     "pending": "Pending"
+  },
+  "dashboard": {
+    "welcomeBack": "Welcome back, {name}",
+    "overview": "Here's your academic overview.",
+    "semesterWeek": "{semester} · Week {week}",
+    "gpa": "GPA {gpa}",
+    "myCourses": "My courses",
+    "viewAll": "View all",
+    "progress": "{percent}% complete",
+    "noCourses": "No active courses yet",
+    "noCoursesHint": "Browse the catalog to enroll in your first course.",
+    "browseCatalog": "Browse catalog",
+    "liveSession": "Live session",
+    "liveNow": "Live now",
+    "joinSession": "Join session",
+    "startsAt": "Starts {time}",
+    "noLiveTitle": "No live sessions scheduled",
+    "noLiveHint": "Upcoming sessions for your courses appear here.",
+    "walletBalance": "Wallet balance",
+    "points": "{amount} in points",
+    "topUp": "Top up",
+    "history": "History",
+    "recentGrades": "Recent grades",
+    "transcript": "Transcript",
+    "noGrades": "No grades yet",
+    "noGradesHint": "Your completed courses will appear here."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -106,7 +133,10 @@
   "shell": {
     "menu": "Navigation menu",
     "openMenu": "Open menu",
-    "sidebar": "Main navigation"
+    "sidebar": "Main navigation",
+    "search": "Search courses, people, files…",
+    "searchLabel": "Search",
+    "userMenu": "Account menu"
   },
   "settings": {
     "title": "Settings",

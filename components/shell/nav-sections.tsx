@@ -172,15 +172,24 @@ export function NavLink({
     <Link
       href={href}
       onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
       className={cn(
-        "flex items-center gap-3 rounded-md px-3 py-2.5 min-h-11 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "group flex items-center gap-3 rounded-lg px-3 py-2.5 min-h-11 text-sm font-medium",
+        "transition-colors duration-200 motion-safe:active:scale-[0.99]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-low",
         active
-          ? "bg-primary text-primary-foreground"
-          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+          ? "bg-accent text-accent-foreground"
+          : "text-muted-foreground hover:bg-surface-high hover:text-foreground",
       )}
     >
-      <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-      {t(item.labelKey as Parameters<typeof t>[0])}
+      <item.icon
+        className={cn(
+          "h-[18px] w-[18px] shrink-0 transition-colors",
+          active ? "text-primary" : "text-muted-foreground group-hover:text-primary",
+        )}
+        aria-hidden="true"
+      />
+      <span className="truncate">{t(item.labelKey as Parameters<typeof t>[0])}</span>
     </Link>
   );
 }
@@ -214,7 +223,7 @@ export function NavSections({
 
       {visibleAcademic.length > 0 && (
         <>
-          <div className="pt-2 pb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <div className="pt-4 pb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             {t("nav.academic")}
           </div>
           {visibleAcademic.map((item) => (
@@ -225,7 +234,7 @@ export function NavSections({
 
       {visibleTeach.length > 0 && (
         <>
-          <div className="pt-2 pb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <div className="pt-4 pb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             {t("nav.teaching")}
           </div>
           {visibleTeach.map((item) => (
@@ -236,7 +245,7 @@ export function NavSections({
 
       {visibleFinance.length > 0 && (
         <>
-          <div className="pt-2 pb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <div className="pt-4 pb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             {t("nav.finance")}
           </div>
           {visibleFinance.map((item) => (
@@ -247,7 +256,7 @@ export function NavSections({
 
       {visibleAdmin.length > 0 && (
         <>
-          <div className="pt-2 pb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <div className="pt-4 pb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             {t("nav.admin")}
           </div>
           {visibleAdmin.map((item) => (

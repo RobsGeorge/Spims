@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { SessionUser } from "@/lib/auth/session";
 import { BOTTOM_NAV_ITEMS, NavSections, filterNavItems } from "@/components/shell/nav-sections";
+import { BrandMark } from "@/components/brand-mark";
 
 export function MobileNavDrawer({
   user,
@@ -36,17 +37,27 @@ export function MobileNavDrawer({
       />
       <aside
         className={cn(
-          "absolute top-0 bottom-0 w-72 max-w-[85vw] bg-card border-e shadow-lg flex flex-col",
+          "absolute top-0 bottom-0 w-72 max-w-[85vw] bg-surface-low border-e border-border/60 shadow-float flex flex-col",
           "start-0 animate-in slide-in-from-start duration-200 motion-reduce:animate-none",
         )}
       >
-        <div className="h-14 flex items-center justify-between px-4 border-b">
-          <span className="text-lg font-bold text-primary">{t("common.appName")}</span>
+        <div className="flex items-center justify-between gap-2 px-4 py-4 border-b border-border/60">
+          <span className="flex items-center gap-3 min-w-0">
+            <BrandMark />
+            <span className="min-w-0">
+              <span className="block font-display text-lg leading-none text-primary">
+                {t("common.appName")}
+              </span>
+              <span className="block text-xs text-muted-foreground truncate mt-1">
+                {t("common.appTagline")}
+              </span>
+            </span>
+          </span>
           <Button variant="ghost" size="icon" onClick={onClose} aria-label={t("common.cancel")}>
             <X className="h-5 w-5" />
           </Button>
         </div>
-        <nav className="flex-1 overflow-y-auto p-2 space-y-1">
+        <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
           <NavSections user={user} locale={locale} pathname={pathname} onNavigate={onClose} />
         </nav>
       </aside>
@@ -77,10 +88,10 @@ export function BottomNav({ user, locale }: { user: SessionUser; locale: string 
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 pb-[env(safe-area-inset-bottom)]"
+      className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border/60 bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/75 shadow-float pb-[env(safe-area-inset-bottom)]"
       aria-label="Primary"
     >
-      <ul className="flex items-stretch justify-around">
+      <ul className="flex items-stretch justify-around px-2 py-1.5">
         {items.map((item) => {
           const href = `/${locale}${item.href}`;
           const active = pathname === href || pathname.startsWith(`${href}/`);
@@ -89,12 +100,20 @@ export function BottomNav({ user, locale }: { user: SessionUser; locale: string 
               <Link
                 href={href}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 py-2 min-h-11 text-xs",
-                  active ? "text-primary font-medium" : "text-muted-foreground",
+                  "flex flex-col items-center justify-center gap-1 py-1.5 min-h-11 text-[11px] font-medium",
+                  "transition-colors motion-safe:active:scale-[0.97]",
+                  active ? "text-accent-foreground" : "text-muted-foreground",
                 )}
                 aria-current={active ? "page" : undefined}
               >
-                <item.icon className="h-5 w-5" aria-hidden="true" />
+                <span
+                  className={cn(
+                    "flex items-center justify-center rounded-full px-4 py-1 transition-colors",
+                    active ? "bg-accent" : "bg-transparent",
+                  )}
+                >
+                  <item.icon className="h-5 w-5" aria-hidden="true" />
+                </span>
                 <span className="truncate max-w-full px-1">
                   {t(item.labelKey as Parameters<typeof t>[0])}
                 </span>

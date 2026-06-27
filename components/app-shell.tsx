@@ -29,7 +29,11 @@ export function AppShell({
       <MobileNavDrawer user={user} locale={locale} open={open} onClose={closeMenu} />
       <div className="flex flex-col flex-1 min-w-0 pb-16 md:pb-0">
         <Topbar user={user} locale={locale} onOpenMenu={openMenu} />
-        <main id="main-content" className="flex-1 overflow-auto p-4 md:p-6" tabIndex={-1}>
+        <main
+          id="main-content"
+          className="flex-1 overflow-auto bg-background p-4 md:p-8"
+          tabIndex={-1}
+        >
           <PageTransition>{children}</PageTransition>
         </main>
         <BottomNav user={user} locale={locale} />

@@ -24,6 +24,7 @@ test.describe("Phase 0 — Locale & RTL", () => {
 
   test("Locale switcher navigates to Arabic", async ({ page }) => {
     await page.goto("/en");
+    await page.click('[data-testid="locale-trigger"]');
     await page.click('[data-testid="locale-ar"]');
     await expect(page).toHaveURL(/\/ar/);
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
@@ -31,6 +32,7 @@ test.describe("Phase 0 — Locale & RTL", () => {
 
   test("Locale switcher navigates to French", async ({ page }) => {
     await page.goto("/en");
+    await page.click('[data-testid="locale-trigger"]');
     await page.click('[data-testid="locale-fr"]');
     await expect(page).toHaveURL(/\/fr/);
   });

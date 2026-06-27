@@ -43,10 +43,17 @@ export function NotificationsBell() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative rounded-full text-muted-foreground hover:bg-surface-low hover:text-foreground"
+          aria-label={t("title")}
+        >
           <Bell className="h-5 w-5" />
           {unread > 0 && (
-            <Badge className="absolute -top-1 -end-1 h-5 min-w-5 px-1 text-[10px]">{unread}</Badge>
+            <Badge className="absolute top-1 end-1 h-5 min-w-5 px-1 text-[10px] tabular-nums border-2 border-card">
+              {unread > 9 ? "9+" : unread}
+            </Badge>
           )}
         </Button>
       </DropdownMenuTrigger>

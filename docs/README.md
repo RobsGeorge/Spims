@@ -7,12 +7,16 @@ This repository starts as a **complete design package** that an AI coding agent 
 ## 📚 Documents (read in this order)
 1. **`docs/spims-spec-v0.2.md`** — the product specification. The source of truth for *what* the system does.
 2. **`docs/schema.prisma`** — the database (~50 models across 9 contexts).
-3. **`docs/permissions-matrix.md`** — the 7 roles × 14 contexts authorization contract.
-4. **`docs/api-route-structure.md`** — ~90 API endpoints + backend architecture.
-5. **`docs/frontend-architecture.md`** — routes per role, components, RTL/i18n, theming, motion.
-6. **`docs/claude-code-build-brief.md`** — **the build plan**: Phase 0–9 with guardrails & acceptance criteria.
-7. **`docs/getting-started.md`** — how to drive Claude Code/Cursor through the build, and how to set up the VPS + domain.
-8. **`docs/phase-0-scaffold.md`** — the exact commands + starter code for the foundation.
+3. **`docs/entity-model-overview.md`** — human-readable entity map, ER diagrams, spec traceability.
+4. **`docs/permissions-matrix.md`** — the 7 roles × 14 contexts authorization contract.
+5. **`docs/api-route-structure.md`** — ~90 API endpoints + backend architecture.
+6. **`docs/frontend-architecture.md`** — routes per role, components, RTL/i18n, theming, motion.
+7. **`docs/claude-code-build-brief.md`** — **the build plan**: Phase 0–9 with guardrails & acceptance criteria.
+8. **`docs/getting-started.md`** — how to drive Claude Code/Cursor through the build, and how to set up the VPS + domain.
+9. **`docs/phase-0-scaffold.md`** — the exact commands + starter code for the foundation.
+
+### Alternative codebase evaluation
+10. **`docs/eschool-gap-analysis.md`** — section-by-section comparison vs E School SAAS (Laravel K–12); what to build greenfield vs patterns worth borrowing. **Conclusion: do not adapt E School — build Spims in this repo.**
 
 ## 🧱 Stack
 Next.js (App Router) + TypeScript · PostgreSQL + Prisma · Tailwind + shadcn/ui · Framer Motion · next-intl · TanStack Query · react-hook-form + Zod · BullMQ + Redis. Self-hosted on a VPS.

@@ -34,6 +34,9 @@ test.describe("Phase 8 — Accessibility", () => {
 
   test("locale switcher buttons have aria labels", async ({ page }) => {
     await page.goto("/en/login");
+    const trigger = page.locator('[data-testid="locale-trigger"]');
+    await expect(trigger).toBeVisible();
+    await trigger.click();
     await expect(page.locator('[data-testid="locale-ar"]')).toBeVisible();
   });
 });

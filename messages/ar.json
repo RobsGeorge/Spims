@@ -1,6 +1,7 @@
 {
   "common": {
     "appName": "سبيمز",
+    "appTagline": "مدرسة قبطية أرثوذكسية",
     "loading": "جارٍ التحميل…",
     "error": "حدث خطأ",
     "save": "حفظ",
@@ -16,6 +17,32 @@
     "active": "نشط",
     "suspended": "موقوف",
     "pending": "قيد الانتظار"
+  },
+  "dashboard": {
+    "welcomeBack": "مرحبًا بعودتك، {name}",
+    "overview": "إليك نظرة عامة على مسارك الأكاديمي.",
+    "semesterWeek": "{semester} · الأسبوع {week}",
+    "gpa": "المعدل {gpa}",
+    "myCourses": "مقرراتي",
+    "viewAll": "عرض الكل",
+    "progress": "{percent}% مكتمل",
+    "noCourses": "لا توجد مقررات نشطة بعد",
+    "noCoursesHint": "تصفّح الكتالوج للتسجيل في أول مقرر لك.",
+    "browseCatalog": "تصفّح الكتالوج",
+    "liveSession": "جلسة مباشرة",
+    "liveNow": "مباشر الآن",
+    "joinSession": "انضم إلى الجلسة",
+    "startsAt": "تبدأ {time}",
+    "noLiveTitle": "لا توجد جلسات مباشرة مجدولة",
+    "noLiveHint": "ستظهر هنا الجلسات القادمة لمقرراتك.",
+    "walletBalance": "رصيد المحفظة",
+    "points": "{amount} نقاط",
+    "topUp": "شحن الرصيد",
+    "history": "السجل",
+    "recentGrades": "أحدث الدرجات",
+    "transcript": "السجل الأكاديمي",
+    "noGrades": "لا توجد درجات بعد",
+    "noGradesHint": "ستظهر هنا مقرراتك المكتملة."
   },
   "nav": {
     "dashboard": "لوحة التحكم",
@@ -106,7 +133,10 @@
   "shell": {
     "menu": "قائمة التنقل",
     "openMenu": "فتح القائمة",
-    "sidebar": "التنقل الرئيسي"
+    "sidebar": "التنقل الرئيسي",
+    "search": "ابحث عن المقررات والأشخاص والملفات…",
+    "searchLabel": "بحث",
+    "userMenu": "قائمة الحساب"
   },
   "settings": {
     "title": "الإعدادات",

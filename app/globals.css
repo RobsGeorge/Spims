@@ -3,52 +3,90 @@
 @tailwind utilities;
 
 @layer base {
+  /*
+   * Sacred Academic — see DESIGN.md (the normative source).
+   * Values are HSL channels (shadcn convention) consumed via hsl(var(--token)).
+   * Light: deep liturgical burgundy + academic gold on a cool near-white field.
+   * Dark:  Material-tonal flip — light rose carries the accent role on deep navy.
+   */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --background: 231.4 100% 98.6%; /* Cool Field #f8f9ff */
+    --foreground: 212.4 62.7% 11.6%; /* Scholar Ink #0b1c30 */
+    --card: 0 0% 100%; /* Card White */
+    --card-foreground: 212.4 62.7% 11.6%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    /* Default primary: deep liturgical burgundy */
-    --primary: 345 60% 30%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 40%;
-    --accent: 43 60% 50%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 345 60% 30%;
-    --radius: 0.5rem;
+    --popover-foreground: 212.4 62.7% 11.6%;
+    /* Liturgical Burgundy */
+    --primary: 336.7 93.7% 18.8%; /* #5d0326 */
+    --primary-foreground: 0 0% 100%;
+    --primary-deep: 338.6 100% 11%; /* #380014 — hover/active */
+    /* Low-emphasis surfaces */
+    --secondary: 221.2 100% 96.9%; /* surface-low */
+    --secondary-foreground: 350.5 12.6% 29.6%; /* Muted Ink */
+    --muted: 221.2 100% 96.9%;
+    --muted-foreground: 350.5 12.6% 29.6%; /* #554245 */
+    /* Burgundy tint — hover wash, active nav, brand badges */
+    --accent: 350.5 100% 92.5%; /* #ffd9df */
+    --accent-foreground: 341.5 57.3% 32.2%; /* #812340 */
+    /* Academic Gold accent */
+    --gold: 41.2 75.7% 66.1%; /* #eac167 */
+    --gold-foreground: 42.2 100% 7.3%; /* #251a00 */
+    /* Status */
+    --success: 160.1 84.1% 39.4%; /* #10b981 */
+    --success-foreground: 0 0% 100%;
+    --warning: 37.7 92.1% 50.2%; /* #f59e0b */
+    --warning-foreground: 42.2 100% 7.3%;
+    --destructive: 0 84.2% 60.2%; /* #ef4444 */
+    --destructive-foreground: 0 0% 100%;
+    /* Hairline rose borders + burgundy focus ring */
+    --border: 351.1 27.3% 80.6%; /* #dbc0c4 */
+    --input: 351.1 27.3% 80.6%;
+    --ring: 336.7 93.7% 18.8%;
+    /* Cool surface ramp (tonal depth) */
+    --surface: 0 0% 100%;
+    --surface-low: 221.2 100% 96.9%; /* #eff4ff */
+    --surface-mid: 220.8 100% 95.1%; /* #e6eeff */
+    --surface-high: 218.8 100% 93.3%; /* #dde9ff */
+    --surface-variant: 218.2 100% 91.4%; /* #d3e3ff */
+    --radius: 1rem; /* 16px default component radius */
     --font-sans: "Inter", system-ui, sans-serif;
-    --font-arabic: "Cairo", "IBM Plex Sans Arabic", system-ui, sans-serif;
+    --font-display: "Playfair Display", Georgia, serif;
+    --font-arabic: "IBM Plex Sans Arabic", "Cairo", system-ui, sans-serif;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 345 55% 55%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 43 60% 45%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 345 55% 55%;
+    --background: 222.9 44.7% 9.2%; /* deep navy #0d1322 */
+    --foreground: 228.9 65.9% 92%; /* #dde2f8 */
+    --card: 223.6 30.6% 14.1%; /* #191f2f */
+    --card-foreground: 228.9 65.9% 92%;
+    --popover: 223.6 30.6% 14.1%;
+    --popover-foreground: 228.9 65.9% 92%;
+    /* Tonal flip: light rose carries primary on dark */
+    --primary: 348.5 100% 84.7%; /* #ffb1c0 */
+    --primary-foreground: 338.6 100% 11%; /* deep burgundy text on rose */
+    --primary-deep: 341.3 60.8% 30%; /* filled burgundy container */
+    --secondary: 223.6 34.4% 12.5%; /* surface-low */
+    --secondary-foreground: 228.9 65.9% 92%;
+    --muted: 223.6 34.4% 12.5%;
+    --muted-foreground: 351.1 27.3% 80.6%; /* #dbc0c4 */
+    --accent: 341.3 60.8% 30%; /* filled burgundy #7b1e3b */
+    --accent-foreground: 350.5 100% 92.5%; /* tint text */
+    --gold: 40.6 73.8% 67.1%; /* #e9c16d */
+    --gold-foreground: 42.2 100% 7.3%;
+    --success: 160.1 84.1% 39.4%;
+    --success-foreground: 0 0% 100%;
+    --warning: 37.7 92.1% 50.2%;
+    --warning-foreground: 42.2 100% 7.3%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 350.5 12.6% 29.6%; /* #554245 */
+    --input: 350.5 12.6% 29.6%;
+    --ring: 348.5 100% 84.7%;
+    --surface: 223.6 30.6% 14.1%;
+    --surface-low: 223.6 34.4% 12.5%;
+    --surface-mid: 223.6 30.6% 14.1%;
+    --surface-high: 223.6 23.4% 18.4%; /* #242a3a */
+    --surface-variant: 226.4 19% 22.7%; /* #2f3445 */
   }
 }
 
@@ -72,6 +110,31 @@
 [lang="fr"] body,
 [dir="ltr"] body:not([lang="ar"]) {
   font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/*
+ * The Serif-For-Voice Rule (DESIGN.md): Playfair carries display + headline
+ * levels only. Latin h1/h2 default to the serif; functional UI (h3+, buttons,
+ * labels, tables) stays Inter. Opt an editorial h3 in with `.font-display`,
+ * or pull an h1/h2 back to UI sans with `.font-sans`.
+ */
+h1,
+h2 {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* The Arabic-Is-Sans Rule (DESIGN.md): Arabic never uses the Latin serif. */
+[lang="ar"] h1,
+[lang="ar"] h2,
+[lang="ar"] h3,
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3 {
+  font-family: var(--font-arabic), system-ui, sans-serif;
+  letter-spacing: normal;
 }
 
 /* Accessibility */

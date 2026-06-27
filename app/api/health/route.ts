@@ -22,7 +22,9 @@ async function checkRedis(): Promise<boolean> {
       connectTimeout: 2_000,
       maxRetriesPerRequest: 1,
       lazyConnect: true,
+      retryStrategy: () => null,
     });
+    redis.on("error", () => undefined);
     await redis.connect();
     const pong = await redis.ping();
     await redis.quit();
@@ -33,15 +35,19 @@ async function checkRedis(): Promise<boolean> {
 }
 
 export async function GET() {
-  const [database, redis] = await Promise.all([checkDatabase(), checkRedis()]);
+  const redisConfigured = isQueueAvailable();
+  const [database, redis] = await Promise.all([
+    checkDatabase(),
+    redisConfigured ? checkRedis() : Promise.resolve(false),
+  ]);
   const ok = database;
-  const status = ok ? (redis ? "ok" : "degraded") : "error";
+  const status = ok ? (!redisConfigured || redis ? "ok" : "degraded") : "error";
 
   return NextResponse.json(
     {
       status,
       version: packageJson.version,
-      checks: { database, redis },
+      checks: { database, redis: redisConfigured ? redis : null },
       timestamp: new Date().toISOString(),
     },
     { status: ok ? 200 : 503 },

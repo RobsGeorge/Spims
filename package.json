@@ -15,6 +15,7 @@
     "db:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
+    "setup:local": "prisma generate && prisma migrate deploy && tsx prisma/seed.ts",
     "worker": "tsx lib/jobs/worker.ts",
     "acceptance:phase9": "tsx scripts/acceptance-phase9.ts",
     "verify:backup": "tsx scripts/verify-backup-restore.ts"

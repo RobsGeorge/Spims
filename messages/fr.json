@@ -1,6 +1,7 @@
 {
   "common": {
     "appName": "Spims",
+    "appTagline": "École copte orthodoxe",
     "loading": "Chargement…",
     "error": "Une erreur s'est produite",
     "save": "Enregistrer",
@@ -16,6 +17,32 @@
     "active": "Actif",
     "suspended": "Suspendu",
     "pending": "En attente"
+  },
+  "dashboard": {
+    "welcomeBack": "Bon retour, {name}",
+    "overview": "Voici un aperçu de votre parcours.",
+    "semesterWeek": "{semester} · Semaine {week}",
+    "gpa": "Moyenne {gpa}",
+    "myCourses": "Mes cours",
+    "viewAll": "Voir tout",
+    "progress": "{percent}% terminé",
+    "noCourses": "Aucun cours actif pour le moment",
+    "noCoursesHint": "Parcourez le catalogue pour vous inscrire à votre premier cours.",
+    "browseCatalog": "Parcourir le catalogue",
+    "liveSession": "Session en direct",
+    "liveNow": "En direct",
+    "joinSession": "Rejoindre la session",
+    "startsAt": "Commence {time}",
+    "noLiveTitle": "Aucune session en direct programmée",
+    "noLiveHint": "Les prochaines sessions de vos cours apparaîtront ici.",
+    "walletBalance": "Solde du portefeuille",
+    "points": "{amount} en points",
+    "topUp": "Recharger",
+    "history": "Historique",
+    "recentGrades": "Notes récentes",
+    "transcript": "Relevé de notes",
+    "noGrades": "Aucune note pour le moment",
+    "noGradesHint": "Vos cours terminés apparaîtront ici."
   },
   "nav": {
     "dashboard": "Tableau de bord",
@@ -106,7 +133,10 @@
   "shell": {
     "menu": "Menu de navigation",
     "openMenu": "Ouvrir le menu",
-    "sidebar": "Navigation principale"
+    "sidebar": "Navigation principale",
+    "search": "Rechercher cours, personnes, fichiers…",
+    "searchLabel": "Rechercher",
+    "userMenu": "Menu du compte"
   },
   "settings": {
     "title": "Paramètres",

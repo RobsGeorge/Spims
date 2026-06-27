@@ -2,7 +2,16 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
+import { Globe, Check } from "lucide-react";
 import { routing } from "@/i18n/routing";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 const LOCALE_LABELS: Record<string, string> = {
   en: "English",
@@ -17,30 +26,42 @@ export function LocaleSwitcher() {
   const pathname = usePathname();
 
   function switchLocale(next: string) {
-    // Replace the locale segment in the path
     const segments = pathname.split("/");
     segments[1] = next;
     router.push(segments.join("/"));
   }
 
   return (
-    <div className="flex items-center gap-1">
-      {routing.locales.map((l) => (
-        <button
-          key={l}
-          onClick={() => switchLocale(l)}
-          className={`px-2 py-1 text-sm rounded transition-colors ${
-            l === locale
-              ? "bg-primary text-primary-foreground"
-              : "hover:bg-accent hover:text-accent-foreground"
-          }`}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full text-muted-foreground hover:bg-surface-low hover:text-foreground"
           aria-label={t("switchLanguage")}
-          aria-current={l === locale ? "true" : undefined}
-          data-testid={`locale-${l}`}
+          data-testid="locale-trigger"
         >
-          {LOCALE_LABELS[l] ?? l}
-        </button>
-      ))}
-    </div>
+          <Globe className="h-5 w-5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-44">
+        {routing.locales.map((l) => (
+          <DropdownMenuItem
+            key={l}
+            onClick={() => switchLocale(l)}
+            className="flex items-center justify-between gap-2"
+            data-testid={`locale-${l}`}
+          >
+            <span className={cn(l === locale && "font-medium text-foreground")}>
+              {LOCALE_LABELS[l] ?? l}
+            </span>
+            <Check
+              className={cn("h-4 w-4 text-primary", l === locale ? "opacity-100" : "opacity-0")}
+              aria-hidden="true"
+            />
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
