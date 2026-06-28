@@ -1,30 +1,17 @@
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AuthPageShell } from "@/components/auth/auth-page-shell";
+import { AuthPanel } from "@/components/auth/auth-panel";
 import { LoginForm } from "@/components/auth/login-form";
 
 export default async function LoginPage({ params }: { params: Promise<{ locale: string }> }) {
   const t = await getTranslations();
+  const { locale } = await params;
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="text-center">
-        <CardTitle>{t("auth.loginTitle")}</CardTitle>
-        <CardDescription>
-          {t("auth.loginSubtitle")}{" "}
-          <Link href="/register" className="text-primary hover:underline">
-            {t("auth.register")}
-          </Link>
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <LoginFormWrapper params={params} />
-      </CardContent>
-    </Card>
+    <AuthPageShell brandVariant="signIn" mobileTagline={t("auth.brandHeadlineSignIn")}>
+      <AuthPanel title={t("auth.loginTitle")} description={t("auth.loginDescription")}>
+        <LoginForm locale={locale} />
+      </AuthPanel>
+    </AuthPageShell>
   );
-}
-
-async function LoginFormWrapper({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  return <LoginForm locale={locale} />;
 }

@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AuthPageShell } from "@/components/auth/auth-page-shell";
+import { AuthPanel } from "@/components/auth/auth-panel";
 import { SetPasswordForm } from "@/components/auth/set-password-form";
 
 export default async function SetPasswordPage({
@@ -10,28 +11,14 @@ export default async function SetPasswordPage({
   searchParams: Promise<{ userId?: string }>;
 }) {
   const t = await getTranslations();
-
-  return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="text-center">
-        <CardTitle>{t("auth.setPasswordTitle")}</CardTitle>
-        <CardDescription>{t("auth.setPasswordSubtitle")}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <SetPasswordFormWrapper params={params} searchParams={searchParams} />
-      </CardContent>
-    </Card>
-  );
-}
-
-async function SetPasswordFormWrapper({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ locale: string }>;
-  searchParams: Promise<{ userId?: string }>;
-}) {
   const { locale } = await params;
   const { userId = "" } = await searchParams;
-  return <SetPasswordForm locale={locale} userId={userId} />;
+
+  return (
+    <AuthPageShell brandVariant="setPassword" mobileTagline={t("auth.setPasswordMobileTagline")}>
+      <AuthPanel title={t("auth.setPasswordTitle")} description={t("auth.setPasswordSubtitle")}>
+        <SetPasswordForm locale={locale} userId={userId} />
+      </AuthPanel>
+    </AuthPageShell>
+  );
 }
