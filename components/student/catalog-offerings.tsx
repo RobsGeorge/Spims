@@ -18,21 +18,30 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
+interface StudentProgramOption {
+  id: string;
+  programName: string;
+}
+
 interface Offering {
   id: string;
   mode: string;
   course: { code: string; title: string; isFree: boolean; isStandalone: boolean };
   semester: { name: string } | null;
+  waitlist: boolean;
+  warnings: string[];
 }
 
 type Filter = "all" | "free" | "paid";
 
 export function CatalogOfferings({
   offerings,
-  studentProgramId,
+  studentPrograms,
+  initialStudentProgramId,
 }: {
   offerings: Offering[];
-  studentProgramId?: string;
+  studentPrograms: StudentProgramOption[];
+  initialStudentProgramId?: string;
 }) {
   const t = useTranslations();
   const router = useRouter();
@@ -41,6 +50,9 @@ export function CatalogOfferings({
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [studentProgramId, setStudentProgramId] = useState(
+    initialStudentProgramId ?? studentPrograms[0]?.id ?? "",
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -57,6 +69,7 @@ export function CatalogOfferings({
   }, [offerings, query, filter]);
 
   const confirmOffering = offerings.find((o) => o.id === confirmId);
+  const hasScheduleConflict = (confirmOffering?.warnings.length ?? 0) > 0;
 
   const filters: { value: Filter; label: string }[] = [
     { value: "all", label: t("courses.filterAll") },
@@ -64,18 +77,34 @@ export function CatalogOfferings({
     { value: "paid", label: t("courses.filterPaid") },
   ];
 
-  async function enroll(offeringId: string) {
+  async function enroll(offeringId: string, acknowledgeScheduleConflict: boolean) {
     setPending(offeringId);
     setConfirmId(null);
     try {
       const res = await fetch(`/api/offerings/${offeringId}/enroll`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ studentProgramId, acknowledgeScheduleConflict: true }),
+        body: JSON.stringify({
+          studentProgramId: studentProgramId || undefined,
+          acknowledgeScheduleConflict,
+        }),
       });
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        const details =
+          data.details && typeof data.details === "object"
+            ? (data.details as { code?: string })
+            : undefined;
+        if (details?.code === "SCHEDULE_CONFLICT") {
+          toast({
+            variant: "destructive",
+            title: t("enrollment.scheduleConflict"),
+            description: t("enrollment.scheduleConflictHint"),
+          });
+          setConfirmId(offeringId);
+          return;
+        }
         toast({ variant: "destructive", title: t("enrollment.failed"), description: data.message });
         return;
       }
@@ -109,6 +138,30 @@ export function CatalogOfferings({
 
   return (
     <div className="space-y-5">
+      {studentPrograms.length > 1 && (
+        <div className="flex flex-col gap-2 sm:max-w-sm">
+          <label htmlFor="student-program" className="text-sm font-medium text-foreground">
+            {t("enrollment.selectProgram")}
+          </label>
+          <select
+            id="student-program"
+            value={studentProgramId}
+            onChange={(e) => {
+              setStudentProgramId(e.target.value);
+              router.replace(`?studentProgramId=${e.target.value}`);
+              router.refresh();
+            }}
+            className="rounded-lg border border-border/60 bg-surface-low px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {studentPrograms.map((sp) => (
+              <option key={sp.id} value={sp.id}>
+                {sp.programName}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex w-full max-w-sm items-center gap-2 rounded-full border border-border/60 bg-surface-low ps-4 pe-3 py-2 transition-all focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
           <Search className="h-[18px] w-[18px] shrink-0 text-muted-foreground" aria-hidden="true" />
@@ -172,9 +225,12 @@ export function CatalogOfferings({
                 <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-accent text-primary">
                   <GraduationCap className="h-5 w-5" aria-hidden="true" />
                 </span>
-                <Badge variant={o.course.isFree ? "accent" : "outline"}>
-                  {o.course.isFree ? t("courses.free") : t("enrollment.paid")}
-                </Badge>
+                <div className="flex flex-wrap justify-end gap-1">
+                  <Badge variant={o.course.isFree ? "accent" : "outline"}>
+                    {o.course.isFree ? t("courses.free") : t("enrollment.paid")}
+                  </Badge>
+                  {o.waitlist && <Badge variant="warning">{t("enrollment.waitlistBadge")}</Badge>}
+                </div>
               </div>
 
               <h3 className="mt-4 font-semibold leading-snug text-foreground line-clamp-2">
@@ -187,7 +243,11 @@ export function CatalogOfferings({
 
               <div className="mt-5 flex items-center justify-end border-t border-border/50 pt-4">
                 <Button size="sm" onClick={() => setConfirmId(o.id)} disabled={pending === o.id}>
-                  {pending === o.id ? t("common.loading") : t("enrollment.enroll")}
+                  {pending === o.id
+                    ? t("common.loading")
+                    : o.waitlist
+                      ? t("enrollment.joinWaitlist")
+                      : t("enrollment.enroll")}
                 </Button>
               </div>
             </li>
@@ -198,10 +258,18 @@ export function CatalogOfferings({
       <Dialog open={!!confirmId} onOpenChange={(open) => !open && setConfirmId(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("enrollment.confirmTitle")}</DialogTitle>
+            <DialogTitle>
+              {hasScheduleConflict
+                ? t("enrollment.confirmConflictTitle")
+                : t("enrollment.confirmTitle")}
+            </DialogTitle>
             <DialogDescription>
               {confirmOffering
-                ? t("enrollment.confirmDescription", { title: confirmOffering.course.title })
+                ? hasScheduleConflict
+                  ? t("enrollment.confirmConflictDescription", {
+                      title: confirmOffering.course.title,
+                    })
+                  : t("enrollment.confirmDescription", { title: confirmOffering.course.title })
                 : null}
             </DialogDescription>
           </DialogHeader>
@@ -212,9 +280,13 @@ export function CatalogOfferings({
             <Button
               type="button"
               disabled={!confirmId || pending === confirmId}
-              onClick={() => confirmId && enroll(confirmId)}
+              onClick={() => confirmId && enroll(confirmId, hasScheduleConflict)}
             >
-              {pending === confirmId ? t("common.loading") : t("enrollment.enroll")}
+              {pending === confirmId
+                ? t("common.loading")
+                : hasScheduleConflict
+                  ? t("enrollment.enrollAnyway")
+                  : t("enrollment.enroll")}
             </Button>
           </DialogFooter>
         </DialogContent>

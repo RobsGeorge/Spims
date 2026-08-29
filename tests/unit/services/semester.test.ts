@@ -37,12 +37,14 @@ describe("semester service", () => {
       createSemester(ADM, {
         academicYearId: "missing",
         name: "Fall",
+        status: "DRAFT",
         startDate: new Date(),
         endDate: new Date(),
         registrationStart: new Date(),
         registrationEnd: new Date(),
         addDropEndWeek: 2,
         lastWithdrawalWeek: 10,
+        withdrawalRefundPercent: 50,
       }),
     ).rejects.toThrow(AppError);
   });
@@ -53,6 +55,7 @@ describe("semester service", () => {
     const semester = await createSemester(ADM, {
       academicYearId: "y1",
       name: "Fall 2026",
+      status: "OPEN",
       startDate: new Date("2026-09-01"),
       endDate: new Date("2026-12-15"),
       registrationStart: new Date("2026-08-01"),

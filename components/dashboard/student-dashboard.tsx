@@ -73,13 +73,22 @@ export async function StudentDashboard({
               title={t("noCourses")}
               description={t("noCoursesHint")}
               action={
-                <Link
-                  href={href("/catalog")}
-                  className="mt-1 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-colors hover:bg-primary-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  <BookOpen className="h-4 w-4" aria-hidden="true" />
-                  {t("browseCatalog")}
-                </Link>
+                <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
+                  <Link
+                    href={href("/apply")}
+                    className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-5 py-2 text-sm font-medium text-foreground shadow-soft transition-colors hover:bg-surface-high focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <GraduationCap className="h-4 w-4" aria-hidden="true" />
+                    {t("browsePrograms")}
+                  </Link>
+                  <Link
+                    href={href("/catalog")}
+                    className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-colors hover:bg-primary-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <BookOpen className="h-4 w-4" aria-hidden="true" />
+                    {t("browseCatalog")}
+                  </Link>
+                </div>
               }
             />
           ) : (

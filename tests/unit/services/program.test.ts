@@ -101,9 +101,11 @@ describe("createProgram", () => {
       code: "CS101",
       name: "Computer Science Diploma",
       type: "DIPLOMA",
+      passingThreshold: 60,
       maxCreditsPerSemester: 18,
       maxCoursesPerSemester: 6,
       maxSemestersToGraduate: 8,
+      electiveCreditsRequired: 6,
     });
     expect(result.id).toBe("prog-1");
     expect(mockDb.program.create).toHaveBeenCalledWith(

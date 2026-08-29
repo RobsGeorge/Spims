@@ -3,6 +3,7 @@ import {
   EnrollmentStatus,
   GradeType,
   OfferingMode,
+  OfferingStatus,
   RefundStatus,
 } from "@prisma/client";
 import { db } from "@/lib/db";
@@ -344,5 +345,87 @@ export async function getStudentEnrollments(studentId: string) {
     where: { studentId },
     include: { offering: { include: { course: true, semester: true } } },
     orderBy: { enrolledAt: "desc" },
+  });
+}
+
+export type StudentEnrollmentAction = "drop" | "withdraw" | null;
+
+/** Determines whether drop or withdraw is available for a student enrollment. */
+export function resolveEnrollmentAction(enrollment: {
+  status: EnrollmentStatus;
+  offering: {
+    mode: OfferingMode;
+    semester: {
+      startDate: Date;
+      addDropEndWeek: number;
+      lastWithdrawalWeek: number;
+    } | null;
+  };
+}): StudentEnrollmentAction {
+  if (enrollment.status !== EnrollmentStatus.ENROLLED && enrollment.status !== EnrollmentStatus.WAITLISTED) {
+    return null;
+  }
+  const now = new Date();
+  const semester = enrollment.offering.semester;
+  if (enrollment.offering.mode === OfferingMode.SELF_PACED || !semester) {
+    if (enrollment.status === EnrollmentStatus.ENROLLED || enrollment.status === EnrollmentStatus.WAITLISTED) {
+      return "drop";
+    }
+    return null;
+  }
+  if (isWithinAddDropWeek(semester.startDate, semester.addDropEndWeek, now)) {
+    return "drop";
+  }
+  if (
+    enrollment.status === EnrollmentStatus.ENROLLED &&
+    isWithinWithdrawalWeek(semester.startDate, semester.lastWithdrawalWeek, now)
+  ) {
+    return "withdraw";
+  }
+  return null;
+}
+
+/** Admin console: open offerings with enrolled/waitlist counts and FIFO waitlist preview. */
+export async function listEnrollmentConsole(opts: { limit?: number } = {}) {
+  const limit = opts.limit ?? 50;
+  const offerings = await db.courseOffering.findMany({
+    where: {
+      deletedAt: null,
+      status: { in: [OfferingStatus.OPEN, OfferingStatus.IN_PROGRESS] },
+    },
+    include: {
+      course: { select: { id: true, code: true, title: true } },
+      semester: { select: { id: true, name: true } },
+      enrollments: {
+        where: { status: { in: [EnrollmentStatus.ENROLLED, EnrollmentStatus.WAITLISTED] } },
+        orderBy: { enrolledAt: "asc" },
+        select: {
+          id: true,
+          status: true,
+          enrolledAt: true,
+          student: { select: { id: true, email: true, firstName: true, lastName: true } },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+  return offerings.map((offering) => {
+    const enrolled = offering.enrollments.filter((e) => e.status === EnrollmentStatus.ENROLLED);
+    const waitlisted = offering.enrollments.filter((e) => e.status === EnrollmentStatus.WAITLISTED);
+    return {
+      id: offering.id,
+      mode: offering.mode,
+      seatCapacity: offering.seatCapacity,
+      course: offering.course,
+      semester: offering.semester,
+      enrolledCount: enrolled.length,
+      waitlistCount: waitlisted.length,
+      waitlist: waitlisted.slice(0, 10).map((e) => ({
+        enrollmentId: e.id,
+        enrolledAt: e.enrolledAt,
+        student: e.student,
+      })),
+    };
   });
 }
