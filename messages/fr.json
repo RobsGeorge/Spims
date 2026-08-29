@@ -198,7 +198,12 @@
     "phone": "Téléphone",
     "language": "Langue",
     "appearance": "Apparence",
-    "changePassword": "Changer le mot de passe"
+    "changePassword": "Changer le mot de passe",
+    "profileDesc": "Mettez à jour votre nom et vos coordonnées.",
+    "preferencesDesc": "Langue et apparence.",
+    "securityDesc": "Gérez votre mot de passe.",
+    "theme": "Thème",
+    "changePasswordDesc": "Nous vous enverrons un lien sécurisé pour réinitialiser votre mot de passe."
   },
   "branding": {
     "title": "Charte graphique",
@@ -263,6 +268,7 @@
   "courses": {
     "title": "Cours",
     "catalog": "Catalogue de cours",
+    "catalogSubtitle": "Parcourez le catalogue académique et signalez les cours qui vous intéressent.",
     "empty": "Aucun cours disponible",
     "addCourse": "Ajouter un cours",
     "code": "Code",
@@ -277,6 +283,16 @@
     "flagInterest": "Marquer l'intérêt",
     "unflagInterest": "Retirer l'intérêt",
     "free": "Gratuit",
+    "search": "Rechercher des cours",
+    "filterAll": "Tous",
+    "filterFree": "Gratuit",
+    "filterPaid": "Payant",
+    "credits": "{count} crédits",
+    "noMatch": "Aucun cours ne correspond à votre recherche",
+    "noMatchHint": "Essayez un autre terme ou réinitialisez les filtres.",
+    "emptyHint": "Les nouveaux cours apparaîtront ici lorsque le catalogue sera publié.",
+    "resetFilters": "Réinitialiser les filtres",
+    "resultCount": "{count, plural, =0 {Aucun résultat} one {# résultat} other {# résultats}}",
     "translate": "Traductions",
     "noneSelected": "Aucun"
   },
@@ -427,11 +443,20 @@
   },
   "enrollment": {
     "catalog": "Catalogue d'inscription",
+    "catalogSubtitle": "Inscrivez-vous aux offres de cours ouvertes ce semestre.",
     "enroll": "S'inscrire",
     "success": "Inscription réussie",
     "waitlisted": "Ajouté à la liste d'attente",
     "failed": "Échec de l'inscription",
-    "paid": "Cours payant"
+    "paid": "Cours payant",
+    "search": "Rechercher des offres",
+    "empty": "Aucune offre disponible",
+    "emptyHint": "Les offres ouvertes apparaîtront ici lorsque l'inscription sera active.",
+    "noMatch": "Aucune offre ne correspond à votre recherche",
+    "noMatchHint": "Essayez un autre terme ou réinitialisez les filtres.",
+    "resultCount": "{count, plural, =0 {Aucun résultat} one {# résultat} other {# résultats}}",
+    "confirmTitle": "Confirmer l'inscription",
+    "confirmDescription": "S'inscrire à {title} ?"
   },
   "degreeAudit": {
     "title": "Audit de diplôme",

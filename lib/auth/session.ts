@@ -15,6 +15,7 @@ export interface SessionUser {
   lastName: string;
   roles: RoleType[];
   preferredLocale: string;
+  themePreference: "LIGHT" | "DARK" | "SYSTEM";
   countryCode: string | null;
 }
 
@@ -48,6 +49,7 @@ export const getSession = cache(async (): Promise<SessionUser | null> => {
     lastName: user.lastName,
     roles: user.roles.map((r) => r.role),
     preferredLocale: user.preferredLocale,
+    themePreference: user.themePreference,
     countryCode: user.countryCode,
   };
 });

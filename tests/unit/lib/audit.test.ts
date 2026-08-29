@@ -49,6 +49,7 @@ function makeUser(roles: RoleType[] = [RoleType.SUPER_ADMIN]): SessionUser {
     lastName: "User",
     roles,
     preferredLocale: "en",
+    themePreference: "SYSTEM" as const,
     countryCode: null,
   };
 }

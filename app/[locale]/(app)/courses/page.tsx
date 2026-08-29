@@ -14,10 +14,11 @@ export default async function CoursesPage() {
   const flaggedSet = new Set(flaggedCourseIds);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">{t("courses.catalog")}</h1>
-      </div>
+    <div className="mx-auto max-w-[1400px] space-y-6">
+      <header className="space-y-1">
+        <h1 className="text-3xl text-primary">{t("courses.catalog")}</h1>
+        <p className="text-muted-foreground">{t("courses.catalogSubtitle")}</p>
+      </header>
       <CourseCatalog
         courses={courses.map((c) => ({
           id: c.id,

@@ -71,6 +71,7 @@ const SA_USER = {
   lastName: "User",
   roles: ["SUPER_ADMIN" as const],
   preferredLocale: "en",
+    themePreference: "SYSTEM" as const,
   countryCode: null,
 };
 
@@ -202,6 +203,7 @@ describe("login", () => {
     emailVerified: true,
     status: "ACTIVE",
     preferredLocale: "en",
+    themePreference: "SYSTEM" as const,
     countryCode: null,
     roles: [{ role: "STUDENT" }],
   };

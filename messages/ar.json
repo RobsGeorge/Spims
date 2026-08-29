@@ -198,7 +198,12 @@
     "phone": "الهاتف",
     "language": "اللغة",
     "appearance": "المظهر",
-    "changePassword": "تغيير كلمة المرور"
+    "changePassword": "تغيير كلمة المرور",
+    "profileDesc": "حدّث اسمك وبيانات التواصل.",
+    "preferencesDesc": "اللغة والمظهر.",
+    "securityDesc": "إدارة كلمة المرور.",
+    "theme": "السمة",
+    "changePasswordDesc": "سنرسل إليك رابطًا آمنًا لإعادة تعيين كلمة المرور."
   },
   "branding": {
     "title": "العلامة التجارية",
@@ -263,6 +268,7 @@
   "courses": {
     "title": "المقررات",
     "catalog": "فهرس المقررات",
+    "catalogSubtitle": "تصفّح الكتالوج الأكاديمي وعلّم المقررات التي تهمك.",
     "empty": "لا توجد مقررات متاحة",
     "addCourse": "إضافة مقرر",
     "code": "الرمز",
@@ -277,6 +283,16 @@
     "flagInterest": "تسجيل الاهتمام",
     "unflagInterest": "إلغاء الاهتمام",
     "free": "مجاني",
+    "search": "ابحث في المقررات",
+    "filterAll": "الكل",
+    "filterFree": "مجاني",
+    "filterPaid": "مدفوع",
+    "credits": "{count} ساعات معتمدة",
+    "noMatch": "لا توجد مقررات مطابقة لبحثك",
+    "noMatchHint": "جرّب مصطلح بحث آخر أو أعد ضبط عوامل التصفية.",
+    "emptyHint": "ستظهر المقررات الجديدة هنا عند نشر الكتالوج الأكاديمي.",
+    "resetFilters": "إعادة ضبط التصفية",
+    "resultCount": "{count, plural, =0 {لا نتائج} one {نتيجة واحدة} other {# نتائج}}",
     "translate": "الترجمات",
     "noneSelected": "لا شيء"
   },
@@ -427,11 +443,20 @@
   },
   "enrollment": {
     "catalog": "فهرس التسجيل",
+    "catalogSubtitle": "سجّل في العروض المفتوحة لهذا الفصل.",
     "enroll": "التسجيل",
     "success": "تم التسجيل بنجاح",
     "waitlisted": "أُضيفت إلى قائمة الانتظار",
     "failed": "فشل التسجيل",
-    "paid": "مقرر مدفوع"
+    "paid": "مقرر مدفوع",
+    "search": "البحث في العروض",
+    "empty": "لا توجد عروض متاحة",
+    "emptyHint": "ستظهر العروض المفتوحة هنا عند تفعيل التسجيل.",
+    "noMatch": "لا توجد عروض مطابقة لبحثك",
+    "noMatchHint": "جرّب مصطلح بحث آخر أو أعد ضبط عوامل التصفية.",
+    "resultCount": "{count, plural, =0 {لا نتائج} one {نتيجة واحدة} other {# نتائج}}",
+    "confirmTitle": "تأكيد التسجيل",
+    "confirmDescription": "هل تريد التسجيل في {title}؟"
   },
   "degreeAudit": {
     "title": "تدقيق الدرجة",

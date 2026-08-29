@@ -5,6 +5,8 @@ import { Inter, Playfair_Display, IBM_Plex_Sans_Arabic } from "next/font/google"
 import { routing, type Locale } from "@/i18n/routing";
 import { getDir } from "@/lib/i18n";
 import { Providers } from "@/components/providers";
+import { getSession } from "@/lib/auth/session";
+import type { ThemeMode } from "@/components/theme-provider";
 import type { Metadata } from "next";
 
 const inter = Inter({
@@ -53,6 +55,8 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
   const dir = getDir(locale as Locale);
+  const session = await getSession();
+  const initialTheme = (session?.themePreference?.toLowerCase() ?? null) as ThemeMode | null;
   // Latin locales load Inter + Playfair; Arabic loads IBM Plex Sans Arabic.
   const fontClass =
     locale === "ar"
@@ -63,7 +67,9 @@ export default async function LocaleLayout({
     <html lang={locale} dir={dir} suppressHydrationWarning className={fontClass}>
       <body className={locale === "ar" ? "font-arabic" : "font-sans"}>
         <NextIntlClientProvider messages={messages}>
-          <Providers locale={locale as Locale}>{children}</Providers>
+          <Providers locale={locale as Locale} initialTheme={initialTheme}>
+            {children}
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>

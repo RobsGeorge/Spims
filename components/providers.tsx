@@ -2,17 +2,20 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
-import { ThemeProvider } from "./theme-provider";
+import { ThemeProvider, type ThemeMode } from "./theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 import type { Locale } from "@/i18n/routing";
 
 export function Providers({
   children,
   locale,
+  initialTheme,
 }: {
   children: React.ReactNode;
   locale: Locale;
+  initialTheme?: ThemeMode | null;
 }) {
-  void locale; // used by parent layout to set dir/lang on <html>
+  void locale;
 
   const [queryClient] = useState(
     () =>
@@ -28,7 +31,10 @@ export function Providers({
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>{children}</ThemeProvider>
+      <ThemeProvider initialMode={initialTheme}>
+        {children}
+        <Toaster />
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

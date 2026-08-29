@@ -3,11 +3,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 import { updateProfileSchema } from "@/lib/validation/user";
 import type { z } from "zod";
 
@@ -23,10 +23,14 @@ interface UserData {
 
 export function ProfileForm({ user }: { user: UserData }) {
   const t = useTranslations();
-  const [saved, setSaved] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
+  const router = useRouter();
+  const { toast } = useToast();
 
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
       firstName: user.firstName,
@@ -36,57 +40,54 @@ export function ProfileForm({ user }: { user: UserData }) {
   });
 
   async function onSubmit(data: FormData) {
-    setServerError(null);
-    setSaved(false);
     const res = await fetch("/api/me", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
     if (res.ok) {
-      setSaved(true);
+      toast({ variant: "success", title: t("settings.saved") });
+      router.refresh();
     } else {
-      const err = await res.json() as { message?: string };
-      setServerError(err.message ?? t("common.error"));
+      const err = (await res.json().catch(() => ({}))) as { message?: string };
+      toast({ variant: "destructive", title: t("common.error"), description: err.message });
     }
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">{t("settings.profile")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="firstName">{t("settings.firstName")}</Label>
-              <Input id="firstName" {...register("firstName")} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="lastName">{t("settings.lastName")}</Label>
-              <Input id="lastName" {...register("lastName")} />
-            </div>
-          </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="firstName">{t("settings.firstName")}</Label>
+          <Input id="firstName" aria-invalid={!!errors.firstName} {...register("firstName")} />
+          {errors.firstName ? (
+            <p className="text-sm text-destructive">{t("auth.validationRequired")}</p>
+          ) : null}
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="lastName">{t("settings.lastName")}</Label>
+          <Input id="lastName" aria-invalid={!!errors.lastName} {...register("lastName")} />
+          {errors.lastName ? (
+            <p className="text-sm text-destructive">{t("auth.validationRequired")}</p>
+          ) : null}
+        </div>
+      </div>
 
-          <div className="space-y-1.5">
-            <Label>{t("settings.email")}</Label>
-            <Input value={user.email} disabled />
-          </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="email">{t("settings.email")}</Label>
+        <Input id="email" value={user.email} disabled />
+      </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="phone">{t("settings.phone")}</Label>
-            <Input id="phone" type="tel" {...register("phone")} />
-          </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="phone">{t("settings.phone")}</Label>
+        <Input id="phone" type="tel" {...register("phone")} />
+      </div>
 
-          {saved && <p className="text-sm text-green-600">{t("settings.saved")}</p>}
-          {serverError && <p className="text-sm text-destructive">{serverError}</p>}
-
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? t("common.loading") : t("common.save")}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+      <div className="flex justify-end pt-1">
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? t("common.loading") : t("common.save")}
+        </Button>
+      </div>
+    </form>
   );
 }

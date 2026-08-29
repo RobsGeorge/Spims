@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-type ThemeMode = "light" | "dark" | "system";
+export type ThemeMode = "light" | "dark" | "system";
 
 interface ThemeContextValue {
   mode: ThemeMode;
@@ -12,14 +12,32 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setModeState] = useState<ThemeMode>("system");
+function normalizeTheme(value?: string | null): ThemeMode | null {
+  if (!value) return null;
+  const lower = value.toLowerCase();
+  if (lower === "light" || lower === "dark" || lower === "system") return lower;
+  return null;
+}
+
+export function ThemeProvider({
+  children,
+  initialMode,
+}: {
+  children: React.ReactNode;
+  initialMode?: ThemeMode | null;
+}) {
+  const [mode, setModeState] = useState<ThemeMode>(() => initialMode ?? "system");
   const [resolvedMode, setResolvedMode] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const stored = localStorage.getItem("spims-theme") as ThemeMode | null;
+    if (initialMode) {
+      setModeState(initialMode);
+      localStorage.setItem("spims-theme", initialMode);
+      return;
+    }
+    const stored = normalizeTheme(localStorage.getItem("spims-theme"));
     if (stored) setModeState(stored);
-  }, []);
+  }, [initialMode]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");

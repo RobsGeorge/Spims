@@ -48,6 +48,7 @@ const ACA = {
   lastName: "Admin",
   roles: ["ACADEMIC_ADMIN" as const],
   preferredLocale: "en",
+    themePreference: "SYSTEM" as const,
   countryCode: null,
 };
 
@@ -58,6 +59,7 @@ const FIN = {
   lastName: "Admin",
   roles: ["FINANCIAL_ADMIN" as const],
   preferredLocale: "en",
+    themePreference: "SYSTEM" as const,
   countryCode: null,
 };
 

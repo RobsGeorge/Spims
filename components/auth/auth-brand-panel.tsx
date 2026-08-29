@@ -16,7 +16,7 @@ export async function AuthBrandPanel({ variant }: { variant: AuthBrandVariant })
   if (variant === "signIn") {
     return (
       <aside
-        className="relative hidden w-full flex-col justify-between overflow-hidden bg-primary-deep p-8 text-primary-foreground md:flex md:w-5/12 xl:p-12"
+        className="relative hidden w-full flex-col justify-between overflow-hidden bg-primary-deep p-8 text-white md:flex md:w-5/12 xl:p-12"
         aria-hidden="false"
       >
         <div className="pointer-events-none absolute inset-0 opacity-100" style={dotPattern} />
@@ -27,7 +27,7 @@ export async function AuthBrandPanel({ variant }: { variant: AuthBrandVariant })
         />
         <div className="relative z-10">
           <h2 className="font-display text-4xl font-bold tracking-tight">{t("common.appName")}</h2>
-          <p className="mt-2 text-xl font-normal text-primary-foreground/80">
+          <p className="mt-2 text-xl font-normal text-white/80">
             {t("auth.brandSubtitleSignIn")}
           </p>
         </div>
@@ -44,8 +44,7 @@ export async function AuthBrandPanel({ variant }: { variant: AuthBrandVariant })
   if (variant === "signUp") {
     return (
       <aside
-        className="relative hidden w-full flex-col justify-between overflow-hidden p-8 text-white md:flex md:w-5/12 xl:p-12"
-        style={{ backgroundColor: "#7B1E3B" }}
+        className="relative hidden w-full flex-col justify-between overflow-hidden bg-primary-deep p-8 text-white md:flex md:w-5/12 xl:p-12"
         aria-hidden="false"
       >
         <div
@@ -104,27 +103,27 @@ export async function AuthBrandPanel({ variant }: { variant: AuthBrandVariant })
   if (variant === "setPassword") {
     return (
       <aside
-        className="relative hidden w-full flex-col justify-between overflow-hidden bg-primary-deep p-8 text-primary-foreground md:flex md:w-5/12 xl:p-12"
+        className="relative hidden w-full flex-col justify-between overflow-hidden bg-primary-deep p-8 text-white md:flex md:w-5/12 xl:p-12"
         aria-hidden="false"
       >
         <div
           className="pointer-events-none absolute inset-0 opacity-30"
           style={{
             backgroundImage:
-              "linear-gradient(45deg, rgba(212,175,55,0.04) 25%, transparent 25%, transparent 75%, rgba(212,175,55,0.04) 75%), linear-gradient(45deg, rgba(212,175,55,0.04) 25%, transparent 25%, transparent 75%, rgba(212,175,55,0.04) 75%)",
+              "linear-gradient(45deg, rgba(234,193,103,0.05) 25%, transparent 25%, transparent 75%, rgba(234,193,103,0.05) 75%), linear-gradient(45deg, rgba(234,193,103,0.05) 25%, transparent 25%, transparent 75%, rgba(234,193,103,0.05) 75%)",
             backgroundSize: "60px 60px",
             backgroundPosition: "0 0, 30px 30px",
           }}
         />
         <div className="relative z-10">
           <h2 className="text-2xl font-bold tracking-tight">{t("auth.brandTitleAcademic")}</h2>
-          <p className="mt-3 max-w-md text-lg text-primary-foreground/80">
+          <p className="mt-3 max-w-md text-lg text-white/80">
             {t("auth.brandDescriptionSetPassword")}
           </p>
         </div>
         <div className="relative z-10 mt-auto">
           <div className="mb-4 h-1 w-16 rounded-full bg-gold" aria-hidden="true" />
-          <p className="text-primary-foreground/70 italic">{t("auth.brandQuote")}</p>
+          <p className="text-white/70 italic">{t("auth.brandQuote")}</p>
         </div>
       </aside>
     );
@@ -133,12 +132,12 @@ export async function AuthBrandPanel({ variant }: { variant: AuthBrandVariant })
   // reset
   return (
     <aside
-      className="relative hidden w-full flex-col justify-end overflow-hidden bg-surface-variant p-8 text-primary-foreground md:flex md:w-5/12 xl:p-12"
+      className="relative hidden w-full flex-col justify-end overflow-hidden bg-primary-deep p-8 text-white md:flex md:w-5/12 xl:p-12"
       aria-hidden="false"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-deep/90 via-primary/80 to-primary-deep/95" />
+      <div className="absolute inset-0 bg-gradient-to-br from-black/0 via-black/0 to-black/30" />
       <div className="relative z-10">
-        <GraduationCap className="mb-6 h-12 w-12 text-primary-foreground/80" aria-hidden="true" />
+        <GraduationCap className="mb-6 h-12 w-12 text-white/80" aria-hidden="true" />
         <h2 className="font-display text-4xl font-bold">{t("common.appName")}</h2>
         <p className="mt-3 text-xl opacity-90">{t("auth.brandSubtitleReset")}</p>
       </div>

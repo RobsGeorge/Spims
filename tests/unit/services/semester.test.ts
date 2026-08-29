@@ -24,6 +24,7 @@ const ADM = {
   lastName: "User",
   roles: ["ADMINISTRATIVE_ADMIN" as const],
   preferredLocale: "en",
+    themePreference: "SYSTEM" as const,
   countryCode: null,
 };
 

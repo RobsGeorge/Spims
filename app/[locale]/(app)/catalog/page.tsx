@@ -16,8 +16,11 @@ export default async function CatalogPage() {
   ]);
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">{t("enrollment.catalog")}</h1>
+    <div className="mx-auto max-w-[1400px] space-y-6">
+      <header className="space-y-1">
+        <h1 className="text-3xl text-primary">{t("enrollment.catalog")}</h1>
+        <p className="text-muted-foreground">{t("enrollment.catalogSubtitle")}</p>
+      </header>
       <CatalogOfferings
         offerings={offerings.map((o) => ({
           id: o.id,

@@ -238,7 +238,7 @@ async function LiveSessionTile({
   }).format(start);
 
   return (
-    <Card className="relative overflow-hidden rounded-xl border-0 bg-primary p-6 text-primary-foreground shadow-soft">
+    <Card className="relative overflow-hidden rounded-xl border-0 bg-primary-deep p-6 text-white shadow-soft">
       {/* Single soft gold accent (DESIGN.md feature-panel variant) */}
       <span
         aria-hidden="true"
@@ -247,19 +247,19 @@ async function LiveSessionTile({
       <div className="relative">
         <div className="flex items-center gap-2">
           <Radio className="h-5 w-5 text-gold" aria-hidden="true" />
-          <span className="text-sm font-semibold uppercase tracking-wide text-primary-foreground/80">
+          <span className="text-sm font-semibold uppercase tracking-wide text-white/80">
             {session.joinOpen ? t("liveNow") : t("liveSession")}
           </span>
         </div>
         <p className="mt-3 text-lg font-semibold leading-tight">{session.title}</p>
-        <p className="mt-1 text-sm text-primary-foreground/70">{session.courseCode}</p>
-        <p className="mt-4 text-sm text-primary-foreground/85">{t("startsAt", { time: timeLabel })}</p>
+        <p className="mt-1 text-sm text-white/70">{session.courseCode}</p>
+        <p className="mt-4 text-sm text-white/85">{t("startsAt", { time: timeLabel })}</p>
         <Link
           href={hrefFn(`/courses/${session.offeringId}`)}
           className={cn(
             "mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-transform motion-safe:active:scale-[0.98]",
             "bg-gold text-gold-foreground hover:bg-gold/90",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-primary",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-primary-deep",
           )}
         >
           <Video className="h-4 w-4" aria-hidden="true" />

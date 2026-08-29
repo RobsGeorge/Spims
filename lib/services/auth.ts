@@ -153,6 +153,7 @@ export async function login(
     lastName: user.lastName,
     roles: user.roles.map((r) => r.role),
     preferredLocale: user.preferredLocale,
+    themePreference: user.themePreference,
     countryCode: user.countryCode,
   };
 

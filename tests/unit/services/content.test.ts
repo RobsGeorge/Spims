@@ -30,6 +30,7 @@ const INS = {
   lastName: "User",
   roles: ["INSTRUCTOR" as const],
   preferredLocale: "en",
+    themePreference: "SYSTEM" as const,
   countryCode: null,
 };
 

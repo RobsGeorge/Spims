@@ -50,6 +50,7 @@ const STUDENT = {
   lastName: "Dent",
   roles: ["STUDENT" as const],
   preferredLocale: "en",
+    themePreference: "SYSTEM" as const,
   countryCode: null,
 };
 

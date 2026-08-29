@@ -35,6 +35,7 @@ const ADMIN_ACTOR = {
   lastName: "User",
   roles: [RoleType.ADMINISTRATIVE_ADMIN],
   preferredLocale: "en",
+    themePreference: "SYSTEM" as const,
   countryCode: null,
 };
 
