@@ -99,7 +99,12 @@ describe("createOffering", () => {
   it("requires semester for cohort mode", async () => {
     mockDb.course.findUnique.mockResolvedValue(COURSE);
     await expect(
-      createOffering(ACA, { courseId: "course-1", mode: OfferingMode.COHORT }),
+      createOffering(ACA, {
+        courseId: "course-1",
+        mode: OfferingMode.COHORT,
+        status: "DRAFT",
+        attendanceThresholdPercent: 75,
+      }),
     ).rejects.toThrow(AppError);
   });
 
@@ -109,6 +114,8 @@ describe("createOffering", () => {
     const offering = await createOffering(ACA, {
       courseId: "course-1",
       mode: OfferingMode.SELF_PACED,
+      status: "OPEN",
+      attendanceThresholdPercent: 75,
     });
     expect(offering.id).toBe("off-1");
   });

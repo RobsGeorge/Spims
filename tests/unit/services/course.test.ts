@@ -130,7 +130,13 @@ describe("getCourseById", () => {
 describe("createCourse", () => {
   it("creates a course", async () => {
     mockDb.course.create.mockResolvedValue(SAMPLE_COURSE);
-    const result = await createCourse(ACA_ACTOR, { code: "CS101", title: "Intro CS", creditHours: 3 });
+    const result = await createCourse(ACA_ACTOR, {
+      code: "CS101",
+      title: "Intro CS",
+      creditHours: 3,
+      isFree: false,
+      isStandalone: false,
+    });
     expect(result.id).toBe("course-1");
     expect(mockDb.course.create).toHaveBeenCalledWith(
       expect.objectContaining({

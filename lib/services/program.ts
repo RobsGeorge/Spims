@@ -28,6 +28,24 @@ export async function listPrograms(opts: { search?: string; page?: number; limit
   return { items, total, page, limit };
 }
 
+/** Active programs that have an active application form (student apply hub). */
+export async function listProgramsOpenForApplication() {
+  return db.program.findMany({
+    where: {
+      deletedAt: null,
+      active: true,
+      applicationForms: { some: { active: true } },
+    },
+    select: {
+      id: true,
+      code: true,
+      name: true,
+      type: true,
+    },
+    orderBy: { name: "asc" },
+  });
+}
+
 export async function getProgramById(id: string) {
   const program = await db.program.findUnique({
     where: { id },

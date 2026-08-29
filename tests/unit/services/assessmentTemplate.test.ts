@@ -98,6 +98,7 @@ describe("createTemplate", () => {
     await expect(
       createTemplate(ACTOR, {
         name: "Bad Template",
+        isDefault: false,
         components: [
           { name: "A", weightPercent: 40, kind: "ASSIGNMENT" as const },
           { name: "B", weightPercent: 30, kind: "EXAM" as const },
@@ -111,6 +112,7 @@ describe("createTemplate", () => {
     await expect(
       createTemplate(ACTOR, {
         name: "Bad Template",
+        isDefault: false,
         components: [
           { name: "A", weightPercent: 40, kind: "ASSIGNMENT" as const },
           { name: "B", weightPercent: 30, kind: "EXAM" as const },

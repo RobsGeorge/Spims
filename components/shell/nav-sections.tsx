@@ -23,6 +23,9 @@ import {
   ShoppingCart,
   ClipboardCheck,
   PenLine,
+  FileCheck2,
+  ListChecks,
+  UserPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SessionUser } from "@/lib/auth/session";
@@ -38,7 +41,9 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { labelKey: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard },
   { labelKey: "nav.courses", href: "/courses", icon: BookOpen },
+  { labelKey: "nav.apply", href: "/apply", icon: FileCheck2, roles: [RoleType.STUDENT] },
   { labelKey: "nav.catalog", href: "/catalog", icon: ShoppingCart, roles: [RoleType.STUDENT] },
+  { labelKey: "nav.enrollments", href: "/enrollments", icon: ListChecks, roles: [RoleType.STUDENT] },
   { labelKey: "nav.degreeAudit", href: "/degree-audit", icon: ClipboardCheck, roles: [RoleType.STUDENT] },
   { labelKey: "nav.grades", href: "/grades", icon: Award },
   { labelKey: "nav.wallet", href: "/wallet", icon: Wallet },
@@ -81,6 +86,12 @@ export const ADMIN_ITEMS: NavItem[] = [
     labelKey: "nav.admissions",
     href: "/admin/admissions",
     icon: UserCheck,
+    roles: [RoleType.SUPER_ADMIN, RoleType.ADMINISTRATIVE_ADMIN],
+  },
+  {
+    labelKey: "nav.enrollment",
+    href: "/admin/enrollment",
+    icon: UserPlus,
     roles: [RoleType.SUPER_ADMIN, RoleType.ADMINISTRATIVE_ADMIN],
   },
   {
